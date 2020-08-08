@@ -300,6 +300,7 @@ void receiveACommand() {
     String receivedMessage = "";
     switch (command) {
       case '0':
+        sendOutputStatuses(client);
         break;
       case 'E':
         /*
@@ -332,6 +333,22 @@ void receiveACommand() {
 void applyOutputs() {
   for (int i = 0; i < connectedPumps; i++) {
     digitalWrite(pumps[i][0], pumps[i][1]);
+  }
+}
+
+/**
+ * It sends to the client the output status
+ * pinId-status_pintId-satus...
+ */
+void sendOutputStatuses(WiFiClient client) {
+  if (client) {
+    for (int i = 0; i < connectedPumps; i++) {
+      client.print(i);
+      client.print('-');
+      client.print(pumps[i][1]);
+      if (i < (connectedPumps - 1))
+        client.print('_');
+    }
   }
 }
 
