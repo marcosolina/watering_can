@@ -37,3 +37,4 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
     * Send commands to Arduino
     * Create a UI to display the data from Arduino
     * Create UI to send comands to Arduino
+* Anything else that might come up in my mind (or my wife) :)
