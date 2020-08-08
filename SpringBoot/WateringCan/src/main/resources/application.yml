@@ -1,1 +1,5 @@
-
+server:
+  servlet:
+    context-path: /WateringCan
+    
+spring:  application:    name: watering-can
