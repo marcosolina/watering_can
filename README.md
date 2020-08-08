@@ -23,23 +23,24 @@ The water pump that I choose operates with 3V-5V and 100-200mA, the Arduino boar
 
 The Raspberry Pi is not required, I already have one so I decided to deploy on it the Java Spring Boot app. You can use **any** computer with a **running JVM**
 
-![Diagram](./Misc/diagram.png)
+![Diagram](./Misc/pictures/diagram.png)
 
+![Diagram](./Misc/videos/video.gif)
 ## TODO
 
 * Writing the Arudino firmware
     * Start / Stop the pump **(Done)**
-    * Read the moisture **(Not implemented)**
+    * Read the moisture **(Not implemented yet)**
     * Connect to the Wifi **(Done)**
-    * Arduino registration with the SpringBoot app **(On Hold)**
+    * Arduino registration with the SpringBoot app **(Done)**
     * Data exchange with the WebApp **(On Hold)**
-    * Remote control of the pump **(On Hold)**
+    * Remote control of the pump **(Done)**
 * Writing the Spring Boot app
     * Arduino discovery service **(Done)**
-    * Read the data from Arduino **(Not implemented)**
+    * Read the data from Arduino **(Not implemented yet)**
     * Send commands to Arduino **(Done)**
-    * Create a UI to display the data from Arduino **(Not implemented)**
-    * Create UI to send comands to Arduino **(Not implemented)**
+    * Create a UI to display the data from Arduino **(Done)**
+    * Create UI to send comands to Arduino **(Done)**
 * Store some config in a File or DB
 * Authentication
 * Anything else that might come up in my mind (or my wife) :)

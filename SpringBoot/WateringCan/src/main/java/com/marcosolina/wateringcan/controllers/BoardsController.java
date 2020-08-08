@@ -43,5 +43,5 @@ public class BoardsController {
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-
+	
 }

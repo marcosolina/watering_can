@@ -26,6 +26,7 @@ public class WUtils {
 		
 		Map<String, String> actions = new HashMap<>();
 		actions.put("SET_PUMP_STATUS", contextPath + WConstants.URL_ACTIONS_ROOT + WConstants.URL_ACTIONS_SET_STATUS);
+		actions.put("LIST_PUMPS", contextPath + WConstants.URL_ACTIONS_ROOT + WConstants.URL_ACTIONS_LIST_PUMPS);
 		map.put("ACTIONS", actions);
 		
 		return map;
