@@ -7,7 +7,7 @@ package com.marcosolina.wateringcan.enums;
  *
  */
 public enum PumpStatuses {
-	ON(1), OFF(0);
+	ON(0), OFF(1);
 
 	private int status;
 

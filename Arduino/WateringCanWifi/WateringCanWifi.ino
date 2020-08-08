@@ -70,8 +70,10 @@ void setup() {
 
   for (int i = 0; i < connectedPumps; i++) {
     pinMode(pumps[i][0], OUTPUT);
+    pumps[i][1] = HIGH;
   }
 
+  applyOutputs();
 }
 
 void loop() {
