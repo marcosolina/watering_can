@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.marcosolina.wateringcan.devices.Pump;
+import com.marcosolina.wateringcan.enums.PumpStatuses;
 import com.marcosolina.wateringcan.errors.WateringException;
 import com.marcosolina.wateringcan.services.interfaces.ActionService;
 import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
@@ -25,10 +27,28 @@ public class ActionServiceNetwork implements ActionService {
 	private BoardsManager boardsManager;
 	
 	@Override
-	public Set<Pump> getListOfPumps() {
+	public Set<Pump> getListOfPumps() throws WateringException {
 		LOGGER.debug("Retrieving list of available pumps");
 		Set<Pump> pumpsSet = new HashSet<>();
-		boardsManager.getPumpsList().stream().forEach(pumpsSet::add);
+		
+		List<String> ips = boardsManager.getIpList();
+		for (String ip : ips) {
+			String reply = sendCommand(ip, WUtils.arduinoCommandsPort(), "0");
+			pumpsSet.addAll(convertArduinoPumpsStatusesReply(reply, ip));
+		}
+		
+		
+		return pumpsSet;
+	}
+	
+	private Set<Pump> convertArduinoPumpsStatusesReply(String arduinoReply, String ip){
+		Set<Pump> pumpsSet = new HashSet<>();
+		String [] pumps = arduinoReply.split("_");
+		for (String pump : pumps) {
+			String [] pumpInfo = pump.split("-");
+			pumpsSet.add(new Pump(ip, pumpInfo[0], PumpStatuses.fromInt(Integer.parseInt(pumpInfo[1]))));
+		}
+		
 		return pumpsSet;
 	}
 
