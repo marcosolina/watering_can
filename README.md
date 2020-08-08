@@ -13,7 +13,7 @@ I want her to be able to retrieve the humidity and depending on the read decide 
 * Or kit [Water Pump + Moistrure Sensor + Relay](https://www.amazon.it/gp/product/B0814HXWVV/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&th=1)
 * [JDK 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
 
-*Optional*
+***Optional***
 
 * [Raspberry Pi](https://www.raspberrypi.org/products/raspberry-pi-4-model-b/)
 
@@ -21,23 +21,23 @@ I want her to be able to retrieve the humidity and depending on the read decide 
 
 The water pump that I choose operates with 3V-5V and 100-200mA, the Arduino board does not have enough power to power on the pump. I have to use an external power source just to provide the energy to the pump, and Arduino only to send the On/Off signal.
 
-The Raspberry Pi is not required, I already have one so I decided to deploy on it the Java Spring Boot app. You can use any computer with a running JVM
+The Raspberry Pi is not required, I already have one so I decided to deploy on it the Java Spring Boot app. You can use **any** computer with a **running JVM**
 
 ![Diagram](./Misc/diagram.png)
 
 ## TODO
 
 * Writing the Arudino firmware
-    * Start / Stop the pump
-    * Read the moisture
-    * Connect to the Wifi
-    * Arduino registration with the SpringBoot app
-    * Data exchange with the WebApp
-    * Remote control of the pump
+    * Start / Stop the pump **(Done)**
+    * Read the moisture **(Not implemented)**
+    * Connect to the Wifi **(Done)**
+    * Arduino registration with the SpringBoot app **(On Hold)**
+    * Data exchange with the WebApp **(On Hold)**
+    * Remote control of the pump **(On Hold)**
 * Writing the Spring Boot app
-    * Arduino discovery service
-    * Read the data from Arduino
-    * Send commands to Arduino
-    * Create a UI to display the data from Arduino
-    * Create UI to send comands to Arduino
+    * Arduino discovery service **(Not implemented)**
+    * Read the data from Arduino **(Not implemented)**
+    * Send commands to Arduino **(Not implemented)**
+    * Create a UI to display the data from Arduino **(Not implemented)**
+    * Create UI to send comands to Arduino **(Not implemented)**
 * Anything else that might come up in my mind (or my wife) :)
