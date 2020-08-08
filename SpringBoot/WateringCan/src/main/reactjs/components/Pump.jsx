@@ -14,6 +14,12 @@ class Pump extends Component{
         this.setState({status: event.target.checked ? "ON" : "OFF"}, this.callParentOnChange.bind(this));
     };
 
+    componentDidUpdate(prevProps) {
+		if (prevProps.status !== this.props.status && this.props.status !== this.state.status) {
+			this.setState({status: this.props.status});
+		}
+	}
+
     callParentOnChange(){
         if(this.props.onChange){
             this.props.onChange(this.props.ip, this.props.id, this.state.status);

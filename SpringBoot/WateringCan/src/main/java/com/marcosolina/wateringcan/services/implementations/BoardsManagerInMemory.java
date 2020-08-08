@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.marcosolina.wateringcan.devices.Pump;
-import com.marcosolina.wateringcan.enums.PumpStatuses;
 import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
 
 /**
@@ -53,12 +51,11 @@ public class BoardsManagerInMemory implements BoardsManager {
 	}
 
 	@Override
-	public List<Pump> getPumpsList() {
-		String ip = boards.get("A4:CF:12:86:51:D0");
-		List<Pump> pumps = new ArrayList<>();
-		pumps.add(new Pump(ip, "0", PumpStatuses.OFF));
-		pumps.add(new Pump(ip, "1", PumpStatuses.OFF));
-		pumps.add(new Pump(ip, "2", PumpStatuses.OFF));
+	public List<String> getIpList() {
+		List<String> pumps = new ArrayList<>();
+		
+		boards.entrySet().stream().forEach(e->pumps.add(e.getValue()));
+		
 		return pumps;
 	}
 

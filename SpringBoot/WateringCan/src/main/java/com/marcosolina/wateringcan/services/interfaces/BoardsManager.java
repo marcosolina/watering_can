@@ -2,8 +2,6 @@ package com.marcosolina.wateringcan.services.interfaces;
 
 import java.util.List;
 
-import com.marcosolina.wateringcan.devices.Pump;
-
 /**
  * It provides the functionalities to manage the Arduino boards
  * 
@@ -38,10 +36,10 @@ public interface BoardsManager {
 	public String getMacForIp(String ip);
 
 	/**
-	 * It returns a list of the available pumps
+	 * It returns a list of the available boards
 	 * 
 	 * @return
 	 */
-	public List<Pump> getPumpsList();
+	public List<String> getIpList();
 
 }

@@ -27,7 +27,8 @@ class App extends Component{
 	retrieveListOfPumpsComplete(resp){
 		console.log(resp);
         if (resp.status && resp.pumps) {
-            this.setState({pumps: resp.pumps});
+			this.setState({pumps: resp.pumps});
+			setTimeout(this.retrieveListOfPumps.bind(this), 2000);
         }
 	}
 
