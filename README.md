@@ -25,10 +25,7 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
 
 ![Diagram](./Misc/pictures/diagram.png)
 
-<video width="240" height="320" controls>
-  <source src="./Misc/videos/video.mp4" type="video/mp4">
-</video>
-
+![Diagram](./Misc/videos/video.gif)
 ## TODO
 
 * Writing the Arudino firmware
