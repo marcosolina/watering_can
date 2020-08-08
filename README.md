@@ -33,7 +33,7 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
     * Read the moisture **(Not implemented yet)**
     * Connect to the Wifi **(Done)**
     * Arduino registration with the SpringBoot app **(Done)**
-    * Data exchange with the WebApp **(On Hold)**
+    * Data exchange with the WebApp **(Partial implementation)**
     * Remote control of the pump **(Done)**
 * Writing the Spring Boot app
     * Arduino discovery service **(Done)**
