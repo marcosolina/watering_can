@@ -17,6 +17,7 @@ public class WConstants {
 	// @formatter:on
 	public static final String URL_ACTIONS_ROOT = "/actions";
 	public static final String URL_ACTIONS_SET_STATUS = "/setStatus";
+	public static final String URL_ACTIONS_LIST_PUMPS = "/pumplist";
 	
 	// @formatter:off
 	/*###################################

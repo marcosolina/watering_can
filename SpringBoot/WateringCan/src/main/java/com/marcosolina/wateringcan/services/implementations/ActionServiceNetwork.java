@@ -5,23 +5,31 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.marcosolina.wateringcan.devices.Pump;
 import com.marcosolina.wateringcan.errors.WateringException;
 import com.marcosolina.wateringcan.services.interfaces.ActionService;
+import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
 import com.marcosolina.wateringcan.utils.WUtils;
 
 public class ActionServiceNetwork implements ActionService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActionServiceNetwork.class);
 
+	@Autowired
+	private BoardsManager boardsManager;
+	
 	@Override
 	public Set<Pump> getListOfPumps() {
 		LOGGER.debug("Retrieving list of available pumps");
-		return null;
+		Set<Pump> pumpsSet = new HashSet<>();
+		boardsManager.getPumpsList().stream().forEach(pumpsSet::add);
+		return pumpsSet;
 	}
 
 	private String sendCommand(String ip, int port, String command) throws WateringException {

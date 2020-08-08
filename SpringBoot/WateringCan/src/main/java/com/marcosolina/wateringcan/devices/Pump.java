@@ -14,6 +14,15 @@ public class Pump {
 	private String id;
 	private PumpStatuses status;
 
+	public Pump() {
+	}
+
+	public Pump(String ip, String id, PumpStatuses status) {
+		this.ip = ip;
+		this.id = id;
+		this.status = status;
+	}
+
 	public String getIp() {
 		return ip;
 	}
