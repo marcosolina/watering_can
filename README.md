@@ -37,7 +37,7 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
     * Remote control of the pump **(Done)**
 * Writing the Spring Boot app
     * Arduino discovery service **(Done)**
-    * Read the data from Arduino **(Not implemented yet)**
+    * Read the data from Arduino **(Partial implementation)**
     * Send commands to Arduino **(Done)**
     * Create a UI to display the data from Arduino **(Done)**
     * Create UI to send comands to Arduino **(Done)**
