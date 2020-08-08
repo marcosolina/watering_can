@@ -3,3 +3,20 @@ server:
     context-path: /WateringCan
     
 spring:  application:    name: watering-can
+    
+    
+logging:
+  level:
+    root: INFO
+    com: 
+      marcosolina: DEBUG
+      
+com:
+  marcosolina:
+    wateringcan:
+      arduino:
+        commands:
+          port: 85
+        discovery:
+          head-message: WCAN
+          port: 90

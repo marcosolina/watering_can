@@ -24,7 +24,7 @@ WiFiServer tcpServer(TCP_LISTENING_PORT);
 WiFiClient tcpClient;
 boolean iHaveAnIpAddress = false;
 
-#define UDP_LISTENING_PORT 82
+#define UDP_LISTENING_PORT 90
 WiFiUDP udpServer;
 
 boolean iHaveRaspIp = false;
@@ -191,10 +191,10 @@ void discoverTheRasp() {
     udpServer.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
 
     /*
-      The Rasp will send a message like: WCANX8080.
+      The Rasp will send a message like: WCAN8080X.
       I check for the string "WCAN" to understand that it
-      is a message coming from the Rasp, and I will read the string
-      after the "X" to understand on which port the SpringBoot app
+      is a message coming from the Rasp, and I will read the rest
+      of the string until the "X" to understand on which port the SpringBoot app
       is running
     */
     if (packetBuffer[0] == 'W' && packetBuffer[1] == 'C' && packetBuffer[2] == 'A' && packetBuffer[3] == 'N') {
@@ -240,7 +240,7 @@ void discoverTheRasp() {
       if (tcpClient.connect(ipRasp, RASP_PORT)) {
         iHaveRaspIp = true;
         udpServer.stop();
-        tcpClient.print("GET /WateringCan/Arduino/register?MAC=");
+        tcpClient.print("GET /WateringCan/Arduino/registration?MAC=");
 
         for (int i = 5; i >= 0; i--) {
           if (mac[i] < 16) {
@@ -312,15 +312,18 @@ void receiveACommand() {
               pumps[pumpNumber][1] = client.read() == '1' ? true : false;
             }
             receivedMessage = "";
-            continue;
           }
           receivedMessage += c;
         }
         applyOutputs();
+        client.print("OK");
         break;
       default:
         break;
     }
+
+    client.flush();
+    client.stop();
   }
 }
 

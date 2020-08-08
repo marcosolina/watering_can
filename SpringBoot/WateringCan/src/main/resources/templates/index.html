@@ -2,7 +2,23 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ReactJS UI POC</title>
+	<meta name='apple-mobile-web-app-capable'			content='yes' />
+	<meta name='mobile-web-app-capable'					content='yes' />
+	<meta name='viewport'								content='width=device-width, initial-scale=1' />
+	<meta name='viewport' id='vp'						content='initial-scale=1.0,user-scalable=no,maximum-scale=1' />
+	<meta name='apple-mobile-web-app-status-bar-style'	content='black'/>
+	<meta charset="UTF-8">
+	<title>Watering Can</title>
+	
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		
+	/*
+	 * These properties are retrieved from the java
+	 */
+	var __URLS = /*[[${T(com.marcosolina.wateringcan.utils.WUtils).getJsUrlConstants()}]]*/ '{}';
+	/*]]>*/
+	</script>
 </head>
 <body>
 	<div id="reactapp"></div>
