@@ -22,13 +22,12 @@ class Pump extends Component{
 
     callParentOnChange(){
         if(this.props.onChange){
-            this.props.onChange(this.props.ip, this.props.id, this.state.status);
+            this.props.onChange(this.props.mac, this.props.id, this.state.status);
         }
     }
 
     render(){
         return(
-        <div>
             <Switch
                 checked={this.state.status == "ON"}
                 onChange={this.handleChange.bind(this)}
@@ -36,12 +35,12 @@ class Pump extends Component{
                 color="primary"
                 inputProps={{ 'aria-label': 'secondary checkbox' }}
             />
-        </div>);
+        );
     }
 }
 
 Pump.propTypes = {
-    ip: PropTypes.string.isRequired,
+    mac: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
 	onChange: PropTypes.func.isRequired

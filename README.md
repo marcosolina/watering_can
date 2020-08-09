@@ -41,6 +41,7 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
     * Send commands to Arduino **(Done)**
     * Create a UI to display the data from Arduino **(Done)**
     * Create UI to send comands to Arduino **(Done)**
-* Store some config in a File or DB
-* Authentication
+* Store some config in a File or DB **(Done - Json file)**
+* Authentication **(Mmmmm I'll see. VPN is more than enought at the moment)**
+* Option to pump XX number of ml of water **(Not implemented yet)**
 * Anything else that might come up in my mind (or my wife) :)

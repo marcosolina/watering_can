@@ -18,6 +18,7 @@ import com.marcosolina.wateringcan.enums.PumpStatuses;
 import com.marcosolina.wateringcan.errors.WateringException;
 import com.marcosolina.wateringcan.services.interfaces.ActionService;
 import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
+import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 import com.marcosolina.wateringcan.utils.WUtils;
 
 public class ActionServiceNetwork implements ActionService {
@@ -26,27 +27,36 @@ public class ActionServiceNetwork implements ActionService {
 	@Autowired
 	private BoardsManager boardsManager;
 	
+	@Autowired
+	private WateringConfigService configService;
+	
 	@Override
 	public Set<Pump> getListOfPumps() throws WateringException {
 		LOGGER.debug("Retrieving list of available pumps");
 		Set<Pump> pumpsSet = new HashSet<>();
 		
-		List<String> ips = boardsManager.getIpList();
-		for (String ip : ips) {
+		List<String> macs = boardsManager.getMacList();
+		for (String mac : macs) {
+			String ip = boardsManager.getIpForMac(mac);
 			String reply = sendCommand(ip, WUtils.arduinoCommandsPort(), "0");
-			pumpsSet.addAll(convertArduinoPumpsStatusesReply(reply, ip));
+			pumpsSet.addAll(convertArduinoPumpsStatusesReply(reply, mac));
 		}
 		
 		
 		return pumpsSet;
 	}
 	
-	private Set<Pump> convertArduinoPumpsStatusesReply(String arduinoReply, String ip){
+	private Set<Pump> convertArduinoPumpsStatusesReply(String arduinoReply, String mac){
 		Set<Pump> pumpsSet = new HashSet<>();
 		String [] pumps = arduinoReply.split("_");
 		for (String pump : pumps) {
 			String [] pumpInfo = pump.split("-");
-			pumpsSet.add(new Pump(ip, pumpInfo[0], PumpStatuses.fromInt(Integer.parseInt(pumpInfo[1]))));
+			String pumpId = pumpInfo[0];
+			
+			Pump p = new Pump(mac, pumpId, PumpStatuses.fromInt(Integer.parseInt(pumpInfo[1])));
+			p.setDescription(configService.getPupmDescription(mac, pumpId));
+			
+			pumpsSet.add(p);
 		}
 		
 		return pumpsSet;
@@ -81,7 +91,7 @@ public class ActionServiceNetwork implements ActionService {
 
 	@Override
 	public boolean setPumpStatus(Pump pump) throws WateringException {
-		String reply = sendCommand(pump.getIp(), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), pump.getStatus().getStatus()));
+		String reply = sendCommand(boardsManager.getIpForMac(pump.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), pump.getStatus().getStatus()));
 		return "OK".contentEquals(reply);
 	}
 }

@@ -1,5 +1,7 @@
 package com.marcosolina.wateringcan.devices;
 
+import java.io.Serializable;
+
 import com.marcosolina.wateringcan.enums.PumpStatuses;
 
 /**
@@ -8,27 +10,41 @@ import com.marcosolina.wateringcan.enums.PumpStatuses;
  * @author Marco
  *
  */
-public class Pump {
+public class Pump implements Serializable {
 
-	private String ip;
+	private static final long serialVersionUID = 1L;
+	private String mac;
 	private String id;
+	private String description;
 	private PumpStatuses status;
 
 	public Pump() {
 	}
 
-	public Pump(String ip, String id, PumpStatuses status) {
-		this.ip = ip;
+	public Pump(String mac, String id, PumpStatuses status) {
+		this.mac = mac;
 		this.id = id;
 		this.status = status;
 	}
 
-	public String getIp() {
-		return ip;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setIp(String ip) {
-		this.ip = ip;
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public String getMac() {
+		return mac;
+	}
+
+	public void setMac(String mac) {
+		this.mac = mac;
 	}
 
 	public String getId() {
@@ -52,7 +68,7 @@ public class Pump {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
+		result = prime * result + ((mac == null) ? 0 : mac.hashCode());
 		return result;
 	}
 
@@ -70,10 +86,10 @@ public class Pump {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (ip == null) {
-			if (other.ip != null)
+		if (mac == null) {
+			if (other.mac != null)
 				return false;
-		} else if (!ip.equals(other.ip))
+		} else if (!mac.equals(other.mac))
 			return false;
 		return true;
 	}
