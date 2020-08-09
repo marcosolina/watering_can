@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.marcosolina.wateringcan.devices.Pump;
 import com.marcosolina.wateringcan.errors.WateringException;
+import com.marcosolina.wateringcan.requestsresponses.ResponseSimple;
+import com.marcosolina.wateringcan.requestsresponses.actions.RequestSaveConfig;
 import com.marcosolina.wateringcan.requestsresponses.actions.ResponseChangePumpStatus;
 import com.marcosolina.wateringcan.requestsresponses.actions.ResponseGetPumpList;
 import com.marcosolina.wateringcan.services.interfaces.ActionService;
+import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 import com.marcosolina.wateringcan.utils.WConstants;
 
 @RestController
@@ -25,12 +28,15 @@ public class ActionsController {
 
 	@Autowired
 	private ActionService actionService;
-	
+
+	@Autowired
+	private WateringConfigService configService;
+
 	@PostMapping(value = WConstants.URL_ACTIONS_SET_STATUS)
 	public ResponseEntity<ResponseChangePumpStatus> changePumpStatus(@RequestBody Pump pump) {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(
-					String.format("New pump status change request for pump: %s on IP: %s", pump.getId(), pump.getIp()));
+			LOGGER.debug(String.format("New pump status change request for pump: %s on MAC: %s", pump.getId(),
+					pump.getMac()));
 		}
 
 		ResponseChangePumpStatus resp = new ResponseChangePumpStatus();
@@ -53,6 +59,22 @@ public class ActionsController {
 		try {
 			actionService.getListOfPumps().stream().forEach(resp::addPump);
 			resp.setStatus(true);
+		} catch (WateringException e) {
+			resp.addError(e);
+		}
+
+		return new ResponseEntity<>(resp, HttpStatus.OK);
+	}
+
+	@PostMapping(value = WConstants.URL_ACTIONS_SAVE_CONFIG)
+	public ResponseEntity<ResponseSimple> saveConfig(@RequestBody RequestSaveConfig request) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("New save config request");
+		}
+
+		ResponseSimple resp = new ResponseSimple();
+		try {
+			resp.setStatus(configService.storePumpsConfig(request.getPumps()));
 		} catch (WateringException e) {
 			resp.addError(e);
 		}

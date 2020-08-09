@@ -51,10 +51,10 @@ public class BoardsManagerInMemory implements BoardsManager {
 	}
 
 	@Override
-	public List<String> getIpList() {
+	public List<String> getMacList() {
 		List<String> pumps = new ArrayList<>();
 		
-		boards.entrySet().stream().forEach(e->pumps.add(e.getValue()));
+		boards.entrySet().stream().forEach(e->pumps.add(e.getKey()));
 		
 		return pumps;
 	}

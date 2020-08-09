@@ -40,6 +40,6 @@ public interface BoardsManager {
 	 * 
 	 * @return
 	 */
-	public List<String> getIpList();
+	public List<String> getMacList();
 
 }
