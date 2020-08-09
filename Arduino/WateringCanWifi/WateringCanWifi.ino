@@ -2,7 +2,7 @@
 #include <WiFiNINA.h>
 #include <WiFiUdp.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 /*############################################
@@ -40,7 +40,7 @@ int RASP_PORT = 0;
    PUMPs PROPERTIES - START
   ############################################*/
 
-const int connectedPumps = 3;//number of connected pumps
+const int connectedPumps = 4;//number of connected pumps
 /*
    This array contains the following info about the pumps:
    [0] -> Pump Pin
@@ -49,7 +49,8 @@ const int connectedPumps = 3;//number of connected pumps
 int pumps[connectedPumps][2] = {
   {2, 0},
   {3, 0},
-  {4, 0}
+  {4, 0},
+  {5, 0}
 }
 ;
 
