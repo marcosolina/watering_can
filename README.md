@@ -25,7 +25,7 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
 
 ## Video Example
 
-![Diagram](./Misc/videos/demo.gif)
+![Diagram](./Misc/videos/video.gif)
 
 ## Diagrams
 
