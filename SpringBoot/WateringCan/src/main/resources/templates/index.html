@@ -8,6 +8,8 @@
 	<meta name='viewport' id='vp'						content='initial-scale=1.0,user-scalable=no,maximum-scale=1' />
 	<meta name='apple-mobile-web-app-status-bar-style'	content='black'/>
 	<meta charset="UTF-8">
+	<link rel="stylesheet" th:href="@{/css/app.css}" />
+	
 	<title>Watering Can</title>
 	
 	<script th:inline="javascript">
@@ -21,7 +23,7 @@
 	</script>
 </head>
 <body>
-	<div id="reactapp"></div>
+	<div id="reactapp" class="app"></div>
 	<script th:src="@{/js/App.js}"></script>
 </body>
 </html>

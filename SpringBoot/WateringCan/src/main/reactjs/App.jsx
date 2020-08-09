@@ -2,10 +2,6 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import Pump from './components/Pump.jsx';
 import { doHttpRequest } from './utils/UtilsFunctions.jsx';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Grid from '@material-ui/core/Grid';
 import InputText from './components/InputText.jsx';
 import Fab from '@material-ui/core/Fab';
@@ -13,14 +9,19 @@ import SaveIcon from '@material-ui/icons/Save';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import MlSlider from './components/MlSlider.jsx';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 
 class App extends Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-			pumps: [],
+			pumps: {},
 			snackOpen: false,
-			snackMessage: ""
+			snackMessage: "",
+			firstLoad: true
 		};
 	}
 
@@ -34,21 +35,32 @@ class App extends Component{
 	
 	retrieveListOfPumpsComplete(resp){
 		console.log(resp);
-        if (resp.status && resp.pumps) {
-			this.setState({pumps: resp.pumps});
-			/* TODO return just the status. Otherwise I will overwrite the Description every time
+        if (resp.status && resp.pumps && resp.pumps.length > 0) {
+			if(this.state.firstLoad){
+				const pumps = {};
+				for(let i = 0; i < resp.pumps.length; i++){
+					pumps[resp.pumps[i].mac + "_" + resp.pumps[i].id] = resp.pumps[i];
+				}
+				this.setState({pumps: pumps, firstLoad: false});
+			}else{
+				const p = {...this.state.pumps};
+				for(let i = 0; i < resp.pumps.length; i++){
+					p[resp.pumps[i].mac + "_" + resp.pumps[i].id].status = resp.pumps[i].status;
+				}
+				this.setState({pumps: p});
+			}
 			setTimeout(this.retrieveListOfPumps.bind(this), 2000);
-			*/
         }
 	}
 
 
 	onChangePump(mac, id, status){
-		doHttpRequest(__URLS.ACTIONS.SET_PUMP_STATUS, 'POST', {
-			mac: mac,
-			id: id,
-			status: status   
-		   }, this.statusUpdateComplete.bind(this));
+		let pumps = this.state.pumps;
+		let pumpKey = mac + "_" + id;
+		pumps[pumpKey].status = status;
+		pumps[pumpKey].forceStatus = true;
+		doHttpRequest(__URLS.ACTIONS.SET_PUMP_STATUS, 'POST', pumps[pumpKey], this.statusUpdateComplete.bind(this));
+		this.setState({pumps});
 	}
 
 	statusUpdateComplete(resp){
@@ -59,21 +71,21 @@ class App extends Component{
 	
 	onChangeInput(id, newValue){
 		let pumps = this.state.pumps;
-		let info = id.split("_");
 
-		for(let i = 0; i < pumps.length; i++){
-			let pump = pumps[i];
-			if(pump.mac == info[0] && pump.id == info[1]){
-				pumps[i].description = newValue;
-				break;
-			}
-		}
-		this.setState({pumps});
+		let pumpKey = id;
+		pumps[pumpKey].description = newValue;
+
+		this.setState({pumps: pumps});
 	}
 
 	saveConfig(){
+		let arrPumps = [];
+		for (const property in this.state.pumps) {
+			arrPumps.push(this.state.pumps[property]);
+		}
+
 		doHttpRequest(__URLS.ACTIONS.SAVE_CONFIG, 'POST', {
-			pumps: this.state.pumps
+			pumps: arrPumps
 		}, this.onConfigSaved.bind(this));
 	}
 
@@ -91,41 +103,59 @@ class App extends Component{
 		this.setState({snackOpen: false, snackMessage: ""});
 	}
 
+	onChangeSlider(mac, id, value){
+		let pumps = this.state.pumps;
+
+		let pumpKey = mac + "_" + id;
+		pumps[pumpKey].ml = value;
+		pumps[pumpKey].forceStatus = false;
+
+		this.setState({pumps});
+	}
+
 
 	render(){
 
-		let pumps = this.state.pumps;
+		let arrPumps = [];
+		for (const property in this.state.pumps) {
+			arrPumps.push(this.state.pumps[property]);
+		}
 
 		return(
 				<Grid container spacing={3}>
-					<Grid item xs={12} sm={6} md={4} lg={2}>
-						<List>
-							{
-								pumps.map((pump, index) => {
-									return <ListItem key={index}>
-											<ListItemText>
+					{
+						arrPumps.map((pump, index) => {
+							return  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
+										<Card>
+											<CardContent>
 												<InputText 
 													name={"" + pump.mac + "_" + pump.id}
 													id={"" + pump.mac + "_" + pump.id}
 													value={pump.description}
 													label={"Plant"}
 													onChange={this.onChangeInput.bind(this)}
-													/>
-											</ListItemText>
-											<ListItemSecondaryAction>
+												/>
+												<br/><br/>
+												<MlSlider 
+													mac={pump.mac}
+													id={pump.id}
+													value={pump.ml}
+													onChange={this.onChangeSlider.bind(this)}
+												/>
+											</CardContent>
+											<CardActions>
 												<Pump
 													mac={pump.mac}
 													id={pump.id}
 													status={pump.status}
 													onChange={this.onChangePump.bind(this)}
-													/>
-											</ListItemSecondaryAction>
-										</ListItem>
-								})
-							}
-						</List>
-					</Grid>
-					<Grid item>
+												/>
+											</CardActions>
+										</Card>
+									</Grid>
+						})
+					}
+					<Grid item xs={12}>
 						<Fab color="primary" aria-label="save" onClick={this.saveConfig.bind(this)}>
 							<SaveIcon />
 						</Fab>

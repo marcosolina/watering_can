@@ -91,7 +91,31 @@ public class ActionServiceNetwork implements ActionService {
 
 	@Override
 	public boolean setPumpStatus(Pump pump) throws WateringException {
+		
+		/*
+		 * If I am turning on the Pump I have to start a new thread
+		 * to turn it of later
+		 */
+		if(pump.getStatus() == PumpStatuses.ON) {
+			if(pump.getMl() > 0) {
+				Runnable stopPumpRunnable = () -> {
+					try {
+						Thread.sleep(WUtils.getMilliSecondToPourMl(pump.getMl()));
+						sendCommand(boardsManager.getIpForMac(pump.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), PumpStatuses.OFF.getStatus()));
+					} catch (WateringException | InterruptedException e) {
+						e.printStackTrace();
+					}
+				};
+				
+				new Thread(stopPumpRunnable).start();
+				String reply = sendCommand(boardsManager.getIpForMac(pump.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), pump.getStatus().getStatus()));
+				return "OK".contentEquals(reply);
+			}
+			return true;
+		}
+		
 		String reply = sendCommand(boardsManager.getIpForMac(pump.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), pump.getStatus().getStatus()));
 		return "OK".contentEquals(reply);
 	}
+	
 }

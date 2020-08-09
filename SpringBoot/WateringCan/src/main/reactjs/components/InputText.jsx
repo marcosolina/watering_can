@@ -33,6 +33,7 @@ class InputText extends Component{
                 label={this.props.label} 
                 name={this.props.name}
                 value={this.state.value}
+                fullWidth
                 onChange={this.handleChange.bind(this)}
             />
             );
