@@ -20,3 +20,5 @@ com:
         discovery:
           head-message: WCAN
           port: 90
+      pump:
+        mlpersecond: 30

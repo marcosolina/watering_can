@@ -7,6 +7,7 @@ public class WUtils {
 	
 	private static String contextPath;
 	private static int arduinoCommandsPort;
+	private static int mlPerSecond;
 
 	private WUtils() {
 		
@@ -18,6 +19,10 @@ public class WUtils {
 	
 	public static void arduinoCommandsPort(int arduinoPort) {
 		WUtils.arduinoCommandsPort = arduinoPort;
+	}
+	
+	public static void setMlPerSecond(int mlPerSecond) {
+		WUtils.mlPerSecond = mlPerSecond;
 	}
 	
 	
@@ -35,6 +40,12 @@ public class WUtils {
 
 	public static int arduinoCommandsPort() {
 		return arduinoCommandsPort;
+	}
+	
+	public static long getMilliSecondToPourMl(int ml) {
+		double seconds = (double)ml / WUtils.mlPerSecond;
+		long milliseconds = (long) (seconds * 1000);
+		return milliseconds;
 	}
 	
 }

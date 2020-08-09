@@ -1,3 +1,18 @@
-body{
+*:disabled {
+	cursor: not-allowed !important;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body, html {
 	background-color: #efeeee;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.app{
+	padding: 20px;
 }

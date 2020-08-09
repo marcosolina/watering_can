@@ -15,7 +15,7 @@ class Pump extends Component{
     };
 
     componentDidUpdate(prevProps) {
-		if (prevProps.status !== this.props.status && this.props.status !== this.state.status) {
+		if (this.props.forceStatus || prevProps.status !== this.props.status && this.props.status !== this.state.status) {
 			this.setState({status: this.props.status});
 		}
 	}
@@ -43,7 +43,8 @@ Pump.propTypes = {
     mac: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    forceStatus: PropTypes.bool
 }
 
 export default Pump;

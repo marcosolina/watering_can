@@ -15,6 +15,7 @@ public class Pump implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String mac;
 	private String id;
+	private int ml;
 	private String description;
 	private PumpStatuses status;
 
@@ -25,6 +26,15 @@ public class Pump implements Serializable {
 		this.mac = mac;
 		this.id = id;
 		this.status = status;
+	}
+	
+
+	public int getMl() {
+		return ml;
+	}
+
+	public void setMl(int ml) {
+		this.ml = ml;
 	}
 
 	public String getDescription() {

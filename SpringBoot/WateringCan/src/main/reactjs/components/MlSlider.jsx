@@ -7,7 +7,7 @@ class MlSlider extends Component{
 	constructor(props){
         super(props);
         this.state = {
-            ml: 0
+            ml: this.props.value || 0
         };
     }
 
@@ -16,16 +16,14 @@ class MlSlider extends Component{
     };
 
     componentDidUpdate(prevProps) {
-        /*
-		if (prevProps.value !== this.props.value && this.props.value !== this.state.value) {
+		if (prevProps.value !== this.props.value && this.props.value !== this.state.ml) {
 			this.setState({value: this.props.value});
         }
-        */
 	}
 
     callParentOnChange(){
         if(this.props.onChange){
-            this.props.onChange(this.props.mac, this.props.id, this.state.value);
+            this.props.onChange(this.props.mac, this.props.id, this.state.ml);
         }
     }
 
@@ -64,6 +62,7 @@ class MlSlider extends Component{
 MlSlider.propTypes = {
     mac: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
+    value: PropTypes.number,
 	onChange: PropTypes.func.isRequired
 }
 
