@@ -98,6 +98,7 @@ public class ActionServiceNetwork implements ActionService {
 		 */
 		if(pump.getStatus() == PumpStatuses.ON) {
 			if(pump.getMl() > 0) {
+				String reply = sendCommand(boardsManager.getIpForMac(pump.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), pump.getStatus().getStatus()));
 				Runnable stopPumpRunnable = () -> {
 					try {
 						Thread.sleep(WUtils.getMilliSecondToPourMl(pump.getMl()));
@@ -108,7 +109,7 @@ public class ActionServiceNetwork implements ActionService {
 				};
 				
 				new Thread(stopPumpRunnable).start();
-				String reply = sendCommand(boardsManager.getIpForMac(pump.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pump.getId(), pump.getStatus().getStatus()));
+				
 				return "OK".contentEquals(reply);
 			}
 			return true;
