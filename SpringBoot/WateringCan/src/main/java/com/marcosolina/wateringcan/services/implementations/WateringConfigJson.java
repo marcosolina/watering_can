@@ -2,7 +2,6 @@ package com.marcosolina.wateringcan.services.implementations;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +10,10 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.system.ApplicationHome;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.marcosolina.wateringcan.WateringCanApplication;
 import com.marcosolina.wateringcan.devices.Pump;
 import com.marcosolina.wateringcan.errors.WateringException;
 import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
@@ -71,20 +72,20 @@ public class WateringConfigJson implements WateringConfigService {
 	}
 
 	private String jarFolder() throws WateringException {
-		String jarFolder;
-		try {
-			jarFolder = new File(WateringConfigJson.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-					.getParent();
-		} catch (URISyntaxException e) {
-			throw new WateringException(e);
+		ApplicationHome home = new ApplicationHome(WateringCanApplication.class);
+		home.getDir();
+		String jarFolder = home.getDir().getAbsolutePath();
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info(String.format("Jar file path: %s", jarFolder));
 		}
 		return jarFolder;
 	}
 
 	static class JsonConfig {
-		
-		public JsonConfig() {}
-		
+
+		public JsonConfig() {
+		}
+
 		private Set<Pump> pumps;
 
 		public Set<Pump> getPumps() {
