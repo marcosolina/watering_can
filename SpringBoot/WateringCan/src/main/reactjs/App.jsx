@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import Pump from './components/Pump.jsx';
+import PumpSwitch from './components/PumpSwitch.jsx';
 import { doHttpRequest } from './utils/UtilsFunctions.jsx';
 import Grid from '@material-ui/core/Grid';
 import InputText from './components/InputText.jsx';
@@ -18,7 +18,7 @@ class App extends Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-			pumps: {},
+			pots: {},
 			snackOpen: false,
 			snackMessage: "",
 			firstLoad: true
@@ -26,41 +26,41 @@ class App extends Component{
 	}
 
 	componentDidMount() {
-		this.retrieveListOfPumps();
+		this.retrieveListOfPots();
 	}
 
-	retrieveListOfPumps() {
-		doHttpRequest(__URLS.ACTIONS.LIST_PUMPS, 'GET', undefined, this.retrieveListOfPumpsComplete.bind(this));
+	retrieveListOfPots() {
+		doHttpRequest(__URLS.ACTIONS.LIST_POTS, 'GET', undefined, this.retrieveListOfPotsComplete.bind(this));
 	}
 	
-	retrieveListOfPumpsComplete(resp){
+	retrieveListOfPotsComplete(resp){
 		console.log(resp);
-        if (resp.status && resp.pumps && resp.pumps.length > 0) {
+        if (resp.status && resp.pots && resp.pots.length > 0) {
 			if(this.state.firstLoad){
-				const pumps = {};
-				for(let i = 0; i < resp.pumps.length; i++){
-					pumps[resp.pumps[i].mac + "_" + resp.pumps[i].id] = resp.pumps[i];
+				const pots = {};
+				for(let i = 0; i < resp.pots.length; i++){
+					pots[resp.pots[i].mac + "_" + resp.pots[i].id] = resp.pots[i];
 				}
-				this.setState({pumps: pumps, firstLoad: false});
+				this.setState({pots: pots, firstLoad: false});
 			}else{
-				const p = {...this.state.pumps};
-				for(let i = 0; i < resp.pumps.length; i++){
-					p[resp.pumps[i].mac + "_" + resp.pumps[i].id].status = resp.pumps[i].status;
+				const p = {...this.state.pots};
+				for(let i = 0; i < resp.pots.length; i++){
+					p[resp.pots[i].mac + "_" + resp.pots[i].id].status = resp.pots[i].status;
 				}
-				this.setState({pumps: p});
+				this.setState({pots: p});
 			}
-			setTimeout(this.retrieveListOfPumps.bind(this), 2000);
+			setTimeout(this.retrieveListOfPots.bind(this), 2000);
         }
 	}
 
 
 	onChangePump(mac, id, status){
-		let pumps = this.state.pumps;
-		let pumpKey = mac + "_" + id;
-		pumps[pumpKey].status = status;
-		pumps[pumpKey].forceStatus = true;
-		doHttpRequest(__URLS.ACTIONS.SET_PUMP_STATUS, 'POST', pumps[pumpKey], this.statusUpdateComplete.bind(this));
-		this.setState({pumps});
+		let pots = this.state.pots;
+		let potKey = mac + "_" + id;
+		pots[potKey].status = status;
+		pots[potKey].forceStatus = true;
+		doHttpRequest(__URLS.ACTIONS.SET_PUMP_STATUS, 'POST', pots[potKey], this.statusUpdateComplete.bind(this));
+		this.setState({pots});
 	}
 
 	statusUpdateComplete(resp){
@@ -70,22 +70,22 @@ class App extends Component{
 	}
 	
 	onChangeInput(id, newValue){
-		let pumps = this.state.pumps;
+		let pots = this.state.pots;
 
-		let pumpKey = id;
-		pumps[pumpKey].description = newValue;
+		let potKey = id;
+		pots[potKey].description = newValue;
 
-		this.setState({pumps: pumps});
+		this.setState({pots: pots});
 	}
 
 	saveConfig(){
-		let arrPumps = [];
-		for (const property in this.state.pumps) {
-			arrPumps.push(this.state.pumps[property]);
+		let arrPots = [];
+		for (const property in this.state.pots) {
+			arrPots.push(this.state.pots[property]);
 		}
 
 		doHttpRequest(__URLS.ACTIONS.SAVE_CONFIG, 'POST', {
-			pumps: arrPumps
+			pots: arrPots
 		}, this.onConfigSaved.bind(this));
 	}
 
@@ -104,50 +104,50 @@ class App extends Component{
 	}
 
 	onChangeSlider(mac, id, value){
-		let pumps = this.state.pumps;
+		let pots = this.state.pots;
 
-		let pumpKey = mac + "_" + id;
-		pumps[pumpKey].ml = value;
-		pumps[pumpKey].forceStatus = false;
+		let potKey = mac + "_" + id;
+		pots[potKey].ml = value;
+		pots[potKey].forceStatus = false;
 
-		this.setState({pumps});
+		this.setState({pots});
 	}
 
 
 	render(){
 
-		let arrPumps = [];
-		for (const property in this.state.pumps) {
-			arrPumps.push(this.state.pumps[property]);
+		let arrPots = [];
+		for (const property in this.state.pots) {
+			arrPots.push(this.state.pots[property]);
 		}
 
 		return(
 				<Grid container spacing={3}>
 					{
-						arrPumps.map((pump, index) => {
+						arrPots.map((pot, index) => {
 							return  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
 										<Card>
 											<CardContent>
 												<InputText 
-													name={"" + pump.mac + "_" + pump.id}
-													id={"" + pump.mac + "_" + pump.id}
-													value={pump.description}
+													name={"" + pot.mac + "_" + pot.id}
+													id={"" + pot.mac + "_" + pot.id}
+													value={pot.description}
 													label={"Plant"}
 													onChange={this.onChangeInput.bind(this)}
 												/>
 												<br/><br/>
 												<MlSlider 
-													mac={pump.mac}
-													id={pump.id}
-													value={pump.ml}
+													mac={pot.mac}
+													id={pot.id}
+													value={pot.ml}
 													onChange={this.onChangeSlider.bind(this)}
 												/>
 											</CardContent>
 											<CardActions>
-												<Pump
-													mac={pump.mac}
-													id={pump.id}
-													status={pump.status}
+												<PumpSwitch
+													mac={pot.mac}
+													id={pot.id}
+													status={pot.status}
 													onChange={this.onChangePump.bind(this)}
 												/>
 											</CardActions>

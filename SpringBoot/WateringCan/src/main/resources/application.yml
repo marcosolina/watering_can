@@ -1,7 +1,6 @@
 server:
   servlet:
     context-path: /WateringCan
-  port: 8081
     
 spring:  application:    name: watering-can
     

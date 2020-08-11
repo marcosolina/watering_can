@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.marcosolina.wateringcan.devices.Pump;
+import com.marcosolina.wateringcan.devices.FlowerPot;
 import com.marcosolina.wateringcan.errors.WateringException;
 import com.marcosolina.wateringcan.requestsresponses.ResponseSimple;
 import com.marcosolina.wateringcan.requestsresponses.actions.RequestSaveConfig;
-import com.marcosolina.wateringcan.requestsresponses.actions.ResponseChangePumpStatus;
-import com.marcosolina.wateringcan.requestsresponses.actions.ResponseGetPumpList;
+import com.marcosolina.wateringcan.requestsresponses.actions.ResponseChangePotStatus;
+import com.marcosolina.wateringcan.requestsresponses.actions.ResponseGetPotsList;
 import com.marcosolina.wateringcan.services.interfaces.ActionService;
 import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 import com.marcosolina.wateringcan.utils.WConstants;
@@ -33,15 +33,15 @@ public class ActionsController {
 	private WateringConfigService configService;
 
 	@PostMapping(value = WConstants.URL_ACTIONS_SET_STATUS)
-	public ResponseEntity<ResponseChangePumpStatus> changePumpStatus(@RequestBody Pump pump) {
+	public ResponseEntity<ResponseChangePotStatus> changePotStatus(@RequestBody FlowerPot pot) {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(String.format("New pump status change request for pump: %s on MAC: %s", pump.getId(),
-					pump.getMac()));
+			LOGGER.debug(
+					String.format("New pot status change request for pot: %s on MAC: %s", pot.getId(), pot.getMac()));
 		}
 
-		ResponseChangePumpStatus resp = new ResponseChangePumpStatus();
+		ResponseChangePotStatus resp = new ResponseChangePotStatus();
 		try {
-			resp.setStatus(actionService.setPumpStatus(pump));
+			resp.setStatus(actionService.setPotStatus(pot));
 		} catch (WateringException e) {
 			resp.addError(e);
 		}
@@ -49,15 +49,15 @@ public class ActionsController {
 		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
-	@GetMapping(value = WConstants.URL_ACTIONS_LIST_PUMPS)
-	public ResponseEntity<ResponseGetPumpList> getPumpsList() {
+	@GetMapping(value = WConstants.URL_ACTIONS_LIST_POTS)
+	public ResponseEntity<ResponseGetPotsList> getPotsList() {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("New list pump request");
+			LOGGER.debug("New list pots request");
 		}
 
-		ResponseGetPumpList resp = new ResponseGetPumpList();
+		ResponseGetPotsList resp = new ResponseGetPotsList();
 		try {
-			actionService.getListOfPumps().stream().forEach(resp::addPump);
+			actionService.getListOfPots().stream().forEach(resp::addPot);
 			resp.setStatus(true);
 		} catch (WateringException e) {
 			resp.addError(e);
@@ -74,7 +74,7 @@ public class ActionsController {
 
 		ResponseSimple resp = new ResponseSimple();
 		try {
-			resp.setStatus(configService.storePumpsConfig(request.getPumps()));
+			resp.setStatus(configService.storePotsConfig(request.getPots()));
 		} catch (WateringException e) {
 			resp.addError(e);
 		}

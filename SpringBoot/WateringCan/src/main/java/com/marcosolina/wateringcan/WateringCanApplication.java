@@ -30,7 +30,7 @@ public class WateringCanApplication {
 			WUtils.setContextPath(env.getProperty("server.servlet.context-path"));
 			WUtils.arduinoCommandsPort(Integer.parseInt(env.getProperty("com.marcosolina.wateringcan.arduino.commands.port")));
 			WUtils.setMlPerSecond(Integer.parseInt(env.getProperty("com.marcosolina.wateringcan.pump.mlpersecond", "0")));
-			config.loadPumpsConfig();
+			config.loadPotsConfig();
 		};
 	}
 

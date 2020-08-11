@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 
-class Pump extends Component{
+class PumpSwitch extends Component{
 	constructor(props){
         super(props);
         this.state = {
@@ -39,7 +39,7 @@ class Pump extends Component{
     }
 }
 
-Pump.propTypes = {
+PumpSwitch.propTypes = {
     mac: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
@@ -47,4 +47,4 @@ Pump.propTypes = {
     forceStatus: PropTypes.bool
 }
 
-export default Pump;
+export default PumpSwitch;

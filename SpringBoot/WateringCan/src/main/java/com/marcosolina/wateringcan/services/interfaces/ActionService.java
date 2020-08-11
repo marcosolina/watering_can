@@ -2,7 +2,7 @@ package com.marcosolina.wateringcan.services.interfaces;
 
 import java.util.Set;
 
-import com.marcosolina.wateringcan.devices.Pump;
+import com.marcosolina.wateringcan.devices.FlowerPot;
 import com.marcosolina.wateringcan.errors.WateringException;
 
 /**
@@ -14,19 +14,19 @@ import com.marcosolina.wateringcan.errors.WateringException;
 public interface ActionService {
 
 	/**
-	 * It returns a list of all the available pumps
+	 * It returns a list of all the available flower pots
 	 * 
 	 * @return
 	 * @throws WateringException
 	 */
-	public Set<Pump> getListOfPumps() throws WateringException;
+	public Set<FlowerPot> getListOfPots() throws WateringException;
 
 	/**
-	 * It set the pump status
+	 * It set the flower pot status
 	 * 
 	 * @param pump
 	 * @return
 	 * @throws WateringException
 	 */
-	public boolean setPumpStatus(Pump pump) throws WateringException;
+	public boolean setPotStatus(FlowerPot pot) throws WateringException;
 }
