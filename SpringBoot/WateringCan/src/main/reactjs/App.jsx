@@ -13,6 +13,9 @@ import MlSlider from './components/MlSlider.jsx';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import SettingsIcon from '@material-ui/icons/Settings';
+import HumidityConfigDialog from './components/HumidityConfigDialog.jsx';
 
 class App extends Component{
 	constructor(props) {
@@ -21,7 +24,9 @@ class App extends Component{
 			pots: {},
 			snackOpen: false,
 			snackMessage: "",
-			firstLoad: true
+			firstLoad: true,
+			dialogOpen: false,
+			potConfig: {}
 		};
 	}
 
@@ -45,7 +50,12 @@ class App extends Component{
 			}else{
 				const p = {...this.state.pots};
 				for(let i = 0; i < resp.pots.length; i++){
-					p[resp.pots[i].mac + "_" + resp.pots[i].id].status = resp.pots[i].status;
+					let pot = resp.pots[i];
+					let potMacAndId = pot.mac + "_" + pot.id;
+					p[potMacAndId].status = pot.status;
+					p[potMacAndId].humidity = pot.humidity;
+					p[potMacAndId].maxHumidityRead = pot.maxHumidityRead;
+					p[potMacAndId].minHumidityRead = pot.minHumidityRead;
 				}
 				this.setState({pots: p});
 			}
@@ -103,6 +113,15 @@ class App extends Component{
 		this.setState({snackOpen: false, snackMessage: ""});
 	}
 
+	openDialog(potId){
+
+		this.setState({
+			dialogOpen: true,
+			potConfig: this.state.pots[potId],
+			potConfigId: potId
+		});
+	}
+
 	onChangeSlider(mac, id, value){
 		let pots = this.state.pots;
 
@@ -111,6 +130,30 @@ class App extends Component{
 		pots[potKey].forceStatus = false;
 
 		this.setState({pots});
+	}
+
+	onCancelDialog(){
+		this.setState({dialogOpen: false});
+	}
+	onSaveDialog(){
+		this.setState({dialogOpen: false});
+		doHttpRequest(__URLS.ACTIONS.SET_WET_DRY, 'POST', this.state.potConfig, this.onConfigSaved.bind(this));
+	}
+
+	onChangeInputDialog(id, newValue){
+		let newState = {...this.state};
+		switch(id){
+		case "dry":
+			newState.potConfig.dryValue = newValue;
+			newState.pots[newState.potConfigId].dryValue = newValue;
+			break;
+		case "wet":
+			newState.potConfig.wetValue = newValue;
+			newState.pots[newState.potConfigId].wetValue = newValue;
+			break;
+		}
+
+		this.setState(newState);
 	}
 
 
@@ -122,64 +165,120 @@ class App extends Component{
 		}
 
 		return(
-				<Grid container spacing={3}>
-					{
-						arrPots.map((pot, index) => {
-							return  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
-										<Card>
-											<CardContent>
-												<InputText 
-													name={"" + pot.mac + "_" + pot.id}
-													id={"" + pot.mac + "_" + pot.id}
-													value={pot.description}
-													label={"Plant"}
-													onChange={this.onChangeInput.bind(this)}
-												/>
-												<br/><br/>
-												<MlSlider 
-													mac={pot.mac}
-													id={pot.id}
-													value={pot.ml}
-													onChange={this.onChangeSlider.bind(this)}
-												/>
-											</CardContent>
-											<CardActions>
-												<PumpSwitch
-													mac={pot.mac}
-													id={pot.id}
-													status={pot.status}
-													onChange={this.onChangePump.bind(this)}
-												/>
-											</CardActions>
-										</Card>
-									</Grid>
-						})
-					}
-					<Grid item xs={12}>
-						<Fab color="primary" aria-label="save" onClick={this.saveConfig.bind(this)}>
-							<SaveIcon />
-						</Fab>
+				<React.Fragment>
+					<Grid container spacing={3}>
+						{
+							arrPots.map((pot, index) => {
+								return  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
+											<Card>
+												<CardContent>
+													<InputText 
+														name={"" + pot.mac + "_" + pot.id}
+														id={"" + pot.mac + "_" + pot.id}
+														value={pot.description}
+														label={"Plant"}
+														onChange={this.onChangeInput.bind(this)}
+													/>
+													<br/><br/>
+													<Typography variant="body1" gutterBottom>
+														{
+															"Current soil humidity: " + pot.humidity + "%"
+														}
+													</Typography>
+													<IconButton 
+														color="primary" 
+														aria-label="upload picture" 
+														component="span"
+														onClick={this.openDialog.bind(this, "" + pot.mac + "_" + pot.id)}
+													>
+														<SettingsIcon />
+													</IconButton>
+													<br/><br/>
+													<MlSlider 
+														mac={pot.mac}
+														id={pot.id}
+														value={pot.ml}
+														onChange={this.onChangeSlider.bind(this)}
+													/>
+												</CardContent>
+												<CardActions>
+													<PumpSwitch
+														mac={pot.mac}
+														id={pot.id}
+														status={pot.status}
+														onChange={this.onChangePump.bind(this)}
+													/>
+												</CardActions>
+											</Card>
+										</Grid>
+							})
+						}
+						<Grid item xs={12}>
+							<Fab color="primary" aria-label="save" onClick={this.saveConfig.bind(this)}>
+								<SaveIcon />
+							</Fab>
+						</Grid>
 					</Grid>
-					<Grid item>
-						<Snackbar
-							anchorOrigin={
-								{
-									vertical: 'bottom',
-									horizontal: 'left',
-								}
+					<Snackbar
+						anchorOrigin={
+							{
+								vertical: 'bottom',
+								horizontal: 'left',
 							}
-							open={this.state.snackOpen}
-							autoHideDuration={3000}
-							onClose={() => this.setState({snackOpen: false})}
-							message={this.state.snackMessage}
-							action={
-								<IconButton size="small" aria-label="close" color="inherit" onClick={this.closeSnackBar.bind(this)}>
-									<CloseIcon fontSize="small" />
-								</IconButton>
-							}
-						/>
-					</Grid>
-				</Grid>
+						}
+						open={this.state.snackOpen}
+						autoHideDuration={3000}
+						onClose={() => this.setState({snackOpen: false})}
+						message={this.state.snackMessage}
+						action={
+							<IconButton size="small" aria-label="close" color="inherit" onClick={this.closeSnackBar.bind(this)}>
+								<CloseIcon fontSize="small" />
+							</IconButton>
+						}
+					/>
+					<HumidityConfigDialog
+						open={this.state.dialogOpen}
+						onCancel={this.onCancelDialog.bind(this)}
+						onSave={this.onSaveDialog.bind(this)}
+					>
+						<Grid container spacing={3}>
+							<Grid item xs={12} sm={6}>
+								<InputText 
+									name={"minread"}
+									id={"min-read"}
+									value={this.state.potConfig.minHumidityRead}
+									label={"Min Read"}
+								/>
+							</Grid>
+							<Grid item xs={12} sm={6}>
+								<InputText 
+									name={"maxread"}
+									id={"max-read"}
+									value={this.state.potConfig.maxHumidityRead}
+									label={"Max Read"}
+								/>
+							</Grid>
+							<Grid item xs={12} sm={6}>
+								<InputText 
+									name={"wet"}
+									id={"wet"}
+									value={this.state.potConfig.wetValue}
+									label={"Wet Value"}
+									onChange={this.onChangeInputDialog.bind(this)}
+								/>
+							</Grid>
+							<Grid item xs={12} sm={6}>
+								<InputText 
+									name={"dry"}
+									id={"dry"}
+									value={this.state.potConfig.dryValue}
+									label={"Max Value"}
+									onChange={this.onChangeInputDialog.bind(this)}
+								/>
+							</Grid>
+						</Grid>
+					</HumidityConfigDialog>
+				</React.Fragment>
 		);
 	}
 }

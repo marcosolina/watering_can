@@ -81,4 +81,20 @@ public class ActionsController {
 
 		return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
+	
+	@PostMapping(value = WConstants.URL_ACTIONS_SET_WET_DRY)
+	public ResponseEntity<ResponseSimple> updateWetDryValues(@RequestBody FlowerPot pot) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("New update wet dry config request");
+		}
+
+		ResponseSimple resp = new ResponseSimple();
+		try {
+			resp.setStatus(actionService.updateWetDryPotValues(pot));
+		} catch (WateringException e) {
+			resp.addError(e);
+		}
+
+		return new ResponseEntity<>(resp, HttpStatus.OK);
+	}
 }

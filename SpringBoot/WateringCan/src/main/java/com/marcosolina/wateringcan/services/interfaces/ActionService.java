@@ -29,4 +29,6 @@ public interface ActionService {
 	 * @throws WateringException
 	 */
 	public boolean setPotStatus(FlowerPot pot) throws WateringException;
+	
+	public boolean updateWetDryPotValues(FlowerPot pot) throws WateringException;
 }

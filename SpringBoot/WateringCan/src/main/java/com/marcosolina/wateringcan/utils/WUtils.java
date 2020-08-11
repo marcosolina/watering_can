@@ -33,6 +33,7 @@ public class WUtils {
 		actions.put("SET_PUMP_STATUS", contextPath + WConstants.URL_ACTIONS_ROOT + WConstants.URL_ACTIONS_SET_STATUS);
 		actions.put("LIST_POTS", contextPath + WConstants.URL_ACTIONS_ROOT + WConstants.URL_ACTIONS_LIST_POTS);
 		actions.put("SAVE_CONFIG", contextPath + WConstants.URL_ACTIONS_ROOT + WConstants.URL_ACTIONS_SAVE_CONFIG);
+		actions.put("SET_WET_DRY", contextPath + WConstants.URL_ACTIONS_ROOT + WConstants.URL_ACTIONS_SET_WET_DRY);
 		map.put("ACTIONS", actions);
 		
 		return map;

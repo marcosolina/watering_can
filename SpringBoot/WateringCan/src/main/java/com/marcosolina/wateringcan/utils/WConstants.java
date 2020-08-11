@@ -19,6 +19,8 @@ public class WConstants {
 	public static final String URL_ACTIONS_SET_STATUS = "/setStatus";
 	public static final String URL_ACTIONS_LIST_POTS = "/pumplist";
 	public static final String URL_ACTIONS_SAVE_CONFIG = "/saveconfig";
+	public static final String URL_ACTIONS_SET_WET_DRY = "/wetDry";
+	
 	
 	// @formatter:off
 	/*###################################

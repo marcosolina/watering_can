@@ -357,6 +357,48 @@ void receiveACommand() {
         applyOutputs();
         client.print("OK");
         break;
+      case 'U':
+        {
+          /*
+             EpumpNumber-pumpStatus
+             Example: E2-1-100 -> Pump number 2 - dry val - wet val
+          */
+          int tmpColumn = 0;
+          int tmpRow = 1000;
+          int tmpDryVal = 0;
+          int tmpWetVal = 0;
+          while (client.connected() && client.available()) {
+            char c = client.read();
+            if (c == '-') {
+              int intValue = receivedMessage.toInt();
+              switch(tmpColumn){
+                case 0:
+                  tmpRow = intValue;
+                  break;
+                case 1:
+                  tmpDryVal = intValue;
+                  break;
+              }
+              tmpColumn++;
+              receivedMessage = "";
+              continue;
+            }
+            receivedMessage += c;
+          }
+          
+          /*
+           * The last number does not have the "-" on the right
+           */
+          if(tmpColumn == 2 && receivedMessage.length() > 0){
+            tmpWetVal = receivedMessage.toInt();
+          }
+          if (tmpRow < connectedPumps) {
+            pumps[tmpRow][moistureWetColumn] = tmpWetVal;
+            pumps[tmpRow][moistureDryColumn] = tmpDryVal;
+          }
+          client.print("OK");
+          break;
+        }
       default:
         break;
     }
@@ -403,13 +445,8 @@ void readMoisture() {
     int percentageHumidity = map(sensorValue, w, d, 100, 0);
     pumps[i][moistureValueColumn] = percentageHumidity;
   }
-#if DEBUG == 1
-  int pumpNumber = 0;
-  Serial.print("Moisture read: ");
-  Serial.print(pumps[pumpNumber][moisturePinColumn]);
-  Serial.print("=");
-  Serial.println(analogRead(pumps[pumpNumber][moisturePinColumn]));
-#endif
+
+
 }
 
 /**

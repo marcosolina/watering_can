@@ -130,5 +130,11 @@ public class ActionServiceNetwork implements ActionService {
 		String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pot.getId(), pot.getStatus().getStatus()));
 		return "OK".contentEquals(reply);
 	}
+
+	@Override
+	public boolean updateWetDryPotValues(FlowerPot pot) throws WateringException {
+		String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(), String.format("U%s-%d-%d", pot.getId(), pot.getDryValue(), pot.getWetValue()));
+		return "OK".contentEquals(reply);
+	}
 	
 }

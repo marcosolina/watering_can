@@ -5,11 +5,9 @@ import org.springframework.context.annotation.Configuration;
 
 import com.marcosolina.wateringcan.services.implementations.ActionServiceNetwork;
 import com.marcosolina.wateringcan.services.implementations.BoardsManagerInMemory;
-import com.marcosolina.wateringcan.services.implementations.CronServicesImpl;
 import com.marcosolina.wateringcan.services.implementations.WateringConfigJson;
 import com.marcosolina.wateringcan.services.interfaces.ActionService;
 import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
-import com.marcosolina.wateringcan.services.interfaces.CronServices;
 import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 
 /**
@@ -24,11 +22,6 @@ public class Beans {
 	@Bean
 	public ActionService getActionService() {
 		return new ActionServiceNetwork();
-	}
-
-	@Bean
-	public CronServices getConverterService() {
-		return new CronServicesImpl();
 	}
 
 	@Bean

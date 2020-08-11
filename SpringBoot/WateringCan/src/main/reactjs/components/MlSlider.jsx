@@ -42,7 +42,7 @@ class MlSlider extends Component{
         return(
             <div>   
                 <Typography id={this.props.mac + "_" + this.props.id} gutterBottom>
-                    ml to pour
+                    Milliliters to pour
                 </Typography>
                 <Slider 
                     defaultValue={this.state.ml}
