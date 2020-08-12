@@ -48,6 +48,9 @@ class App extends Component{
 				}
 				this.setState({pots: pots, firstLoad: false});
 			}else{
+				/*
+				*	I update only the things that I am interested
+				*/
 				const p = {...this.state.pots};
 				for(let i = 0; i < resp.pots.length; i++){
 					let pot = resp.pots[i];
@@ -65,6 +68,12 @@ class App extends Component{
 	}
 
 
+	/**
+	 * Send the new status that I want to set
+	 * @param {*} mac 
+	 * @param {*} id 
+	 * @param {*} status 
+	 */
 	onChangePump(mac, id, status){
 		let pots = this.state.pots;
 		let potKey = mac + "_" + id;
@@ -80,6 +89,11 @@ class App extends Component{
         }
 	}
 	
+	/**
+	 * Updating the desciption input text
+	 * @param {*} id 
+	 * @param {*} newValue 
+	 */
 	onChangeInput(id, newValue){
 		let pots = this.state.pots;
 
@@ -89,6 +103,9 @@ class App extends Component{
 		this.setState({pots: pots});
 	}
 
+	/**
+	 * Save the config of for all the Flower Pots
+	 */
 	saveConfig(){
 		let arrPots = [];
 		for (const property in this.state.pots) {
@@ -123,6 +140,12 @@ class App extends Component{
 		});
 	}
 
+	/**
+	 * Updating the ml when the slider is changed by the user
+	 * @param {*} mac 
+	 * @param {*} id 
+	 * @param {*} value 
+	 */
 	onChangeSlider(mac, id, value){
 		let pots = this.state.pots;
 
@@ -136,11 +159,20 @@ class App extends Component{
 	onCancelDialog(){
 		this.setState({dialogOpen: false});
 	}
+
+	/**
+	 * Send the new config to Arduino
+	 */
 	onSaveDialog(){
 		this.setState({dialogOpen: false});
 		doHttpRequest(__URLS.ACTIONS.SET_WET_DRY, 'POST', this.state.potConfig, this.onConfigSaved.bind(this));
 	}
 
+	/**
+	 * Updating the state when the user changes the "Wet" or "Dry" values
+	 * @param {*} id 
+	 * @param {*} newValue 
+	 */
 	onChangeInputDialog(id, newValue){
 		let newState = {...this.state};
 		switch(id){

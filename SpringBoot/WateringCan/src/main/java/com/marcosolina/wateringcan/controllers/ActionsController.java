@@ -21,6 +21,12 @@ import com.marcosolina.wateringcan.services.interfaces.ActionService;
 import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 import com.marcosolina.wateringcan.utils.WConstants;
 
+/**
+ * Controller used to perform the different actions
+ * 
+ * @author Marco
+ *
+ */
 @RestController
 @RequestMapping(value = WConstants.URL_ACTIONS_ROOT)
 public class ActionsController {

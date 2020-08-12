@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 
+/**
+ * Switch used to turn on and off the pump
+ */
 class PumpSwitch extends Component{
 	constructor(props){
         super(props);

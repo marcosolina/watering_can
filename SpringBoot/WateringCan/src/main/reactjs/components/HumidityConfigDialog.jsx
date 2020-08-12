@@ -9,6 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import InputText from './InputText.jsx';
 import Button from '@material-ui/core/Button';
 
+/**
+ * Simple dialog view used to calibrate the moisture sensor
+ */
 class HumidityConfigDialog extends Component{
 	constructor(props){
         super(props);
