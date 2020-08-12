@@ -40,6 +40,7 @@ public class BoardsController {
 		}
 
 		boardsManager.registerBoard(request.getRemoteAddr(), mac);
+		boardsManager.setLoadedConfig(mac);
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

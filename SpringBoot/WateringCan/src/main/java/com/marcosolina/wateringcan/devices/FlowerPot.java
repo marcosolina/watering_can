@@ -17,6 +17,7 @@ public class FlowerPot implements Serializable {
 	private String id;
 	private int ml;
 	private int humidity;
+	private int moistureCurRead;
 	private int maxHumidityRead;
 	private int minHumidityRead;
 	private int wetValue;
@@ -32,7 +33,14 @@ public class FlowerPot implements Serializable {
 		this.id = id;
 		this.status = status;
 	}
-	
+
+	public int getMoistureCurRead() {
+		return moistureCurRead;
+	}
+
+	public void setMoistureCurRead(int moistureCurRead) {
+		this.moistureCurRead = moistureCurRead;
+	}
 
 	public int getHumidity() {
 		return humidity;

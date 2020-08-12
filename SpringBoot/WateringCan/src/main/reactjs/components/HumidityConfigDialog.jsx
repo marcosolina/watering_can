@@ -19,11 +19,8 @@ class HumidityConfigDialog extends Component{
     render(){
         return(
             <Dialog open={this.props.open} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Set the min and max values</DialogTitle>
+                <DialogTitle id="form-dialog-title">Set the "Dry" and "Wet" values</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        Set the value for the "Wet" status and "Dry" status
-                    </DialogContentText>
                     {this.props.children}
                 </DialogContent>
                 <DialogActions>

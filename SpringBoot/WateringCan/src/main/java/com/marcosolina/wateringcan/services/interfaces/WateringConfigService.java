@@ -12,4 +12,6 @@ public interface WateringConfigService {
 	public Set<FlowerPot> loadPotsConfig() throws WateringException;
 	
 	public String getPotDescription(String mac, String id);
+	
+	public void setWetAndDryValues(FlowerPot pot);
 }

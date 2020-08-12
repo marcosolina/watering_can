@@ -56,6 +56,7 @@ class App extends Component{
 					p[potMacAndId].humidity = pot.humidity;
 					p[potMacAndId].maxHumidityRead = pot.maxHumidityRead;
 					p[potMacAndId].minHumidityRead = pot.minHumidityRead;
+					p[potMacAndId].moistureCurRead = pot.moistureCurRead;
 				}
 				this.setState({pots: p});
 			}
@@ -242,27 +243,38 @@ class App extends Component{
 						onSave={this.onSaveDialog.bind(this)}
 					>
 						<Grid container spacing={3}>
-							<Grid item xs={12} sm={6}>
+							<Grid item xs={12} sm={4}>
+								<InputText 
+									name={"curread"}
+									id={"cur-read"}
+									value={"" + this.state.potConfig.moistureCurRead}
+									label={"Current Read"}
+									disabled={true}
+								/>
+							</Grid>
+							<Grid item xs={12} sm={4}>
 								<InputText 
 									name={"minread"}
 									id={"min-read"}
-									value={this.state.potConfig.minHumidityRead}
+									value={"" + this.state.potConfig.minHumidityRead}
 									label={"Min Read"}
+									disabled={true}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={6}>
+							<Grid item xs={12} sm={4}>
 								<InputText 
 									name={"maxread"}
 									id={"max-read"}
-									value={this.state.potConfig.maxHumidityRead}
+									value={"" + this.state.potConfig.maxHumidityRead}
 									label={"Max Read"}
+									disabled={true}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
 								<InputText 
 									name={"wet"}
 									id={"wet"}
-									value={this.state.potConfig.wetValue}
+									value={"" + this.state.potConfig.wetValue}
 									label={"Wet Value"}
 									onChange={this.onChangeInputDialog.bind(this)}
 								/>
@@ -271,8 +283,8 @@ class App extends Component{
 								<InputText 
 									name={"dry"}
 									id={"dry"}
-									value={this.state.potConfig.dryValue}
-									label={"Max Value"}
+									value={"" + this.state.potConfig.dryValue}
+									label={"Dry Value"}
 									onChange={this.onChangeInputDialog.bind(this)}
 								/>
 							</Grid>

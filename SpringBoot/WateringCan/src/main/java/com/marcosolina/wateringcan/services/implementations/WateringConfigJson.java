@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.system.ApplicationHome;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.marcosolina.wateringcan.WateringCanApplication;
 import com.marcosolina.wateringcan.devices.FlowerPot;
 import com.marcosolina.wateringcan.errors.WateringException;
@@ -30,6 +31,8 @@ public class WateringConfigJson implements WateringConfigService {
 		try {
 			LOGGER.debug("Storing the config into a json file");
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
 			String folder = jarFolder();
 			JsonConfig jc = new JsonConfig();
 			jc.setPots(pots);
@@ -71,7 +74,7 @@ public class WateringConfigJson implements WateringConfigService {
 		}
 	}
 
-	private String jarFolder(){
+	private String jarFolder() {
 		ApplicationHome home = new ApplicationHome(WateringCanApplication.class);
 		home.getDir();
 		String jarFolder = home.getDir().getAbsolutePath();
@@ -102,6 +105,15 @@ public class WateringConfigJson implements WateringConfigService {
 			return p.getDescription();
 		}
 		return null;
+	}
+
+	@Override
+	public void setWetAndDryValues(FlowerPot pot) {
+		FlowerPot p = cache.get(pot.getMac() + "_" + pot.getId());
+		if (p != null) {
+			pot.setWetValue(p.getWetValue());
+			pot.setDryValue(p.getDryValue());
+		}
 	}
 
 }

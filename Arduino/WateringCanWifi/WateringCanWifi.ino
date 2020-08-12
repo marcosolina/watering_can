@@ -2,7 +2,7 @@
 #include <WiFiNINA.h>
 #include <WiFiUdp.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 /*############################################
@@ -64,23 +64,25 @@ const int moistureMinValueRegisteredColumn = 4;
 const int moistureMaxValueRegisteredColumn = 5;
 const int moistureWetColumn = 6;
 const int moistureDryColumn = 7;
+const int moistureCurReadColumn = 8;
 
 /*
    This array contains the following info about the pumps:
    [0] -> Pump Pin
    [1] -> Current status on/off
    [2] -> Moisture Pin
-   [3] -> Moisture Value
+   [3] -> Moisture Value %
    [4] -> Min Moisture Value readed
    [5] -> Max Moisture Value readed
    [6] -> Wet Moisture Value set
    [7] -> Dry Moisture Value set
+   [7] -> Current Moisture Value read
 */
-int pumps[connectedPumps][8] = {
-  {2, 0, A0, 0, 2000, 0, 0 , 0},
-  {3, 0, A1, 0, 2000, 0, 0 , 0},
-  {4, 0, A2, 0, 2000, 0, 0 , 0},
-  {5, 0, A3, 0, 2000, 0, 0 , 0}
+int pumps[connectedPumps][9] = {
+  {2, 0, A0, 0, 2000, 0, 0 , 0, 0},
+  {3, 0, A1, 0, 2000, 0, 0 , 0, 0},
+  {4, 0, A2, 0, 2000, 0, 0 , 0, 0},
+  {5, 0, A3, 0, 2000, 0, 0 , 0, 0}
 }
 ;
 
@@ -111,10 +113,6 @@ void loop() {
   connectToWifi();
   discoverTheRasp();
   receiveACommand();
-#if DEBUG == 1
-  readMoisture();
-  delay(200);
-#endif
 }
 
 
@@ -335,7 +333,13 @@ void receiveACommand() {
     String receivedMessage = "";
     switch (command) {
       case '0':
+#if DEBUG == 1
+        sendOutputStatuses(NULL);
+#endif
         readMoisture();
+#if DEBUG == 1
+        sendOutputStatuses(NULL);
+#endif
         sendOutputStatuses(client);
         break;
       case 'E':
@@ -371,7 +375,7 @@ void receiveACommand() {
             char c = client.read();
             if (c == '-') {
               int intValue = receivedMessage.toInt();
-              switch(tmpColumn){
+              switch (tmpColumn) {
                 case 0:
                   tmpRow = intValue;
                   break;
@@ -385,11 +389,11 @@ void receiveACommand() {
             }
             receivedMessage += c;
           }
-          
+
           /*
-           * The last number does not have the "-" on the right
-           */
-          if(tmpColumn == 2 && receivedMessage.length() > 0){
+             The last number does not have the "-" on the right
+          */
+          if (tmpColumn == 2 && receivedMessage.length() > 0) {
             tmpWetVal = receivedMessage.toInt();
           }
           if (tmpRow < connectedPumps) {
@@ -443,11 +447,12 @@ void readMoisture() {
     }
 
     int percentageHumidity = map(sensorValue, w, d, 100, 0);
-    pumps[i][moistureValueColumn] = percentageHumidity;
+    pumps[i][moistureValueColumn] = percentageHumidity < 0 ? 0 : percentageHumidity;
+    pumps[i][moistureCurReadColumn] = sensorValue;
   }
 
-
 }
+
 
 /**
    It sends to the client the output status
@@ -469,10 +474,32 @@ void sendOutputStatuses(WiFiClient client) {
       client.print(pumps[i][moistureWetColumn]);
       client.print('-');
       client.print(pumps[i][moistureDryColumn]);
-      if (i < (connectedPumps - 1))
+      client.print('-');
+      client.print(pumps[i][moistureCurReadColumn]);
+      if (i < (connectedPumps - 1)) {
         client.print('_');
+      }
     }
   }
+#if DEBUG == 1
+  for (int i = 0; i < connectedPumps; i++) {
+    Serial.print(i);
+    Serial.print('-');
+    Serial.print(pumps[i][pumpStatusColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureValueColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureMinValueRegisteredColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureMaxValueRegisteredColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureWetColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureDryColumn]);
+    Serial.print('-');
+    Serial.println(pumps[i][moistureCurReadColumn]);
+  }
+#endif
 }
 
 /*########################################################

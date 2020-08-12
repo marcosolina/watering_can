@@ -58,6 +58,7 @@ public class ActionServiceNetwork implements ActionService {
 			String moistMax = potInfo[4];
 			String moistWet = potInfo[5];
 			String moistDry = potInfo[6];
+			String moistCurrRead = potInfo[7];
 			
 			FlowerPot p = new FlowerPot(mac, potId, PumpStatuses.fromInt(Integer.parseInt(pumpStatus)));
 			p.setDryValue(Integer.parseInt(moistDry));
@@ -65,6 +66,7 @@ public class ActionServiceNetwork implements ActionService {
 			p.setMaxHumidityRead(Integer.parseInt(moistMax));
 			p.setMinHumidityRead(Integer.parseInt(moistMin));
 			p.setWetValue(Integer.parseInt(moistWet));
+			p.setMoistureCurRead(Integer.parseInt(moistCurrRead));
 			
 			p.setDescription(configService.getPotDescription(mac, potId));
 			
