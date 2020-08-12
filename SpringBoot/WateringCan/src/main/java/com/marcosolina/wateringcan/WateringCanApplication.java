@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
+import com.marcosolina.wateringcan.services.interfaces.CronServices;
 import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 import com.marcosolina.wateringcan.utils.WUtils;
 
@@ -19,6 +20,8 @@ public class WateringCanApplication {
 	
 	@Autowired
 	private WateringConfigService config;
+	@Autowired
+	private CronServices cronService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(WateringCanApplication.class, args);
@@ -30,7 +33,8 @@ public class WateringCanApplication {
 			WUtils.setContextPath(env.getProperty("server.servlet.context-path"));
 			WUtils.arduinoCommandsPort(Integer.parseInt(env.getProperty("com.marcosolina.wateringcan.arduino.commands.port")));
 			WUtils.setMlPerSecond(Integer.parseInt(env.getProperty("com.marcosolina.wateringcan.pump.mlpersecond", "0")));
-			config.loadPumpsConfig();
+			config.loadPotsConfig();
+			cronService.broadCastServerDiscoeryMessate();
 		};
 	}
 

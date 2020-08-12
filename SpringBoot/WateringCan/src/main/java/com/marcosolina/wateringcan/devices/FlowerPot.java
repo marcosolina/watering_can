@@ -5,29 +5,82 @@ import java.io.Serializable;
 import com.marcosolina.wateringcan.enums.PumpStatuses;
 
 /**
- * This class represents a single water pump
+ * This class represents a single flower pot
  * 
  * @author Marco
  *
  */
-public class Pump implements Serializable {
+public class FlowerPot implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String mac;
 	private String id;
 	private int ml;
+	private int humidity;
+	private int moistureCurRead;
+	private int maxHumidityRead;
+	private int minHumidityRead;
+	private int wetValue;
+	private int dryValue;
 	private String description;
 	private PumpStatuses status;
 
-	public Pump() {
+	public FlowerPot() {
 	}
 
-	public Pump(String mac, String id, PumpStatuses status) {
+	public FlowerPot(String mac, String id, PumpStatuses status) {
 		this.mac = mac;
 		this.id = id;
 		this.status = status;
 	}
-	
+
+	public int getMoistureCurRead() {
+		return moistureCurRead;
+	}
+
+	public void setMoistureCurRead(int moistureCurRead) {
+		this.moistureCurRead = moistureCurRead;
+	}
+
+	public int getHumidity() {
+		return humidity;
+	}
+
+	public void setHumidity(int humidity) {
+		this.humidity = humidity;
+	}
+
+	public int getMaxHumidityRead() {
+		return maxHumidityRead;
+	}
+
+	public void setMaxHumidityRead(int maxHumidityRead) {
+		this.maxHumidityRead = maxHumidityRead;
+	}
+
+	public int getMinHumidityRead() {
+		return minHumidityRead;
+	}
+
+	public void setMinHumidityRead(int minHumidityRead) {
+		this.minHumidityRead = minHumidityRead;
+	}
+
+	public int getWetValue() {
+		return wetValue;
+	}
+
+	public void setWetValue(int wetValue) {
+		this.wetValue = wetValue;
+	}
+
+	public int getDryValue() {
+		return dryValue;
+	}
+
+	public void setDryValue(int dryValue) {
+		this.dryValue = dryValue;
+	}
 
 	public int getMl() {
 		return ml;
@@ -90,7 +143,7 @@ public class Pump implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Pump other = (Pump) obj;
+		FlowerPot other = (FlowerPot) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

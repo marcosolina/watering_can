@@ -35,22 +35,54 @@ int RASP_PORT = 0;
    NETWORK PROPERTIES - END
   ############################################*/
 
+/*############################################
+   MOISTURE SENSORs PROPERTIES - START
+  ############################################*/
+
+/*
+   I have to manually calibrate the sensors. Unfortunately every sensor requires its own
+   test. I will provide here some default values
+*/
+const int dry = 1023;// value when I leave it on the table
+const int wet = 704;// value when I leave it in a glass of water
+
+/*############################################
+  MOISTURE SENSORs PROPERTIES - END
+  ############################################*/
+
 
 /*############################################
    PUMPs PROPERTIES - START
   ############################################*/
 
 const int connectedPumps = 4;//number of connected pumps
+const int pumpPinColumn = 0;
+const int pumpStatusColumn = 1;
+const int moisturePinColumn = 2;
+const int moistureValueColumn = 3;
+const int moistureMinValueRegisteredColumn = 4;
+const int moistureMaxValueRegisteredColumn = 5;
+const int moistureWetColumn = 6;
+const int moistureDryColumn = 7;
+const int moistureCurReadColumn = 8;
+
 /*
    This array contains the following info about the pumps:
    [0] -> Pump Pin
    [1] -> Current status on/off
+   [2] -> Moisture Pin
+   [3] -> Moisture Value %
+   [4] -> Min Moisture Value readed
+   [5] -> Max Moisture Value readed
+   [6] -> Wet Moisture Value set
+   [7] -> Dry Moisture Value set
+   [7] -> Current Moisture Value read
 */
-int pumps[connectedPumps][2] = {
-  {2, 0},
-  {3, 0},
-  {4, 0},
-  {5, 0}
+int pumps[connectedPumps][9] = {
+  {2, 0, A0, 0, 2000, 0, 0 , 0, 0},
+  {3, 0, A1, 0, 2000, 0, 0 , 0, 0},
+  {4, 0, A2, 0, 2000, 0, 0 , 0, 0},
+  {5, 0, A3, 0, 2000, 0, 0 , 0, 0}
 }
 ;
 
@@ -70,8 +102,8 @@ void setup() {
 #endif
 
   for (int i = 0; i < connectedPumps; i++) {
-    pinMode(pumps[i][0], OUTPUT);
-    pumps[i][1] = HIGH;
+    pinMode(pumps[i][pumpPinColumn], OUTPUT);
+    pumps[i][pumpStatusColumn] = HIGH;
   }
 
   applyOutputs();
@@ -301,6 +333,13 @@ void receiveACommand() {
     String receivedMessage = "";
     switch (command) {
       case '0':
+#if DEBUG == 1
+        sendOutputStatuses(NULL);
+#endif
+        readMoisture();
+#if DEBUG == 1
+        sendOutputStatuses(NULL);
+#endif
         sendOutputStatuses(client);
         break;
       case 'E':
@@ -313,7 +352,7 @@ void receiveACommand() {
           if (c == '-') {
             int pumpNumber = receivedMessage.toInt();
             if (pumpNumber < connectedPumps) {
-              pumps[pumpNumber][1] = client.read() == '1' ? true : false;
+              pumps[pumpNumber][pumpStatusColumn] = client.read() == '1' ? HIGH : LOW;
             }
             receivedMessage = "";
           }
@@ -322,6 +361,48 @@ void receiveACommand() {
         applyOutputs();
         client.print("OK");
         break;
+      case 'U':
+        {
+          /*
+             EpumpNumber-pumpStatus
+             Example: E2-1-100 -> Pump number 2 - dry val - wet val
+          */
+          int tmpColumn = 0;
+          int tmpRow = 1000;
+          int tmpDryVal = 0;
+          int tmpWetVal = 0;
+          while (client.connected() && client.available()) {
+            char c = client.read();
+            if (c == '-') {
+              int intValue = receivedMessage.toInt();
+              switch (tmpColumn) {
+                case 0:
+                  tmpRow = intValue;
+                  break;
+                case 1:
+                  tmpDryVal = intValue;
+                  break;
+              }
+              tmpColumn++;
+              receivedMessage = "";
+              continue;
+            }
+            receivedMessage += c;
+          }
+
+          /*
+             The last number does not have the "-" on the right
+          */
+          if (tmpColumn == 2 && receivedMessage.length() > 0) {
+            tmpWetVal = receivedMessage.toInt();
+          }
+          if (tmpRow < connectedPumps) {
+            pumps[tmpRow][moistureWetColumn] = tmpWetVal;
+            pumps[tmpRow][moistureDryColumn] = tmpDryVal;
+          }
+          client.print("OK");
+          break;
+        }
       default:
         break;
     }
@@ -333,24 +414,92 @@ void receiveACommand() {
 
 void applyOutputs() {
   for (int i = 0; i < connectedPumps; i++) {
-    digitalWrite(pumps[i][0], pumps[i][1]);
+    digitalWrite(pumps[i][pumpPinColumn], pumps[i][pumpStatusColumn]);
   }
 }
 
+void readMoisture() {
+  for (int i = 0; i < connectedPumps; i++) {
+    int sensorValue = analogRead(pumps[i][moisturePinColumn]);
+    /*
+       Storing the min value ever
+    */
+    if (sensorValue < pumps[i][moistureMinValueRegisteredColumn]) {
+      pumps[i][moistureMinValueRegisteredColumn] = sensorValue;
+    }
+
+    /*
+       Storing the max value ever
+    */
+    if (sensorValue > pumps[i][moistureMaxValueRegisteredColumn]) {
+      pumps[i][moistureMaxValueRegisteredColumn] = sensorValue;
+    }
+
+    int w = wet;
+    int d = dry;
+
+    /*
+       If the user has configured the wet and dry value I will use them, otherwise go for the defaults
+    */
+    if (pumps[i][moistureWetColumn] + pumps[i][moistureDryColumn] != 0) {
+      w = pumps[i][moistureWetColumn];
+      d = pumps[i][moistureDryColumn];
+    }
+
+    int percentageHumidity = map(sensorValue, w, d, 100, 0);
+    pumps[i][moistureValueColumn] = percentageHumidity < 0 ? 0 : percentageHumidity;
+    pumps[i][moistureCurReadColumn] = sensorValue;
+  }
+
+}
+
+
 /**
- * It sends to the client the output status
- * pinId-status_pintId-satus...
- */
+   It sends to the client the output status
+   pinId-status-moisturevalue-minValue-maxValue-wet-dry_...
+*/
 void sendOutputStatuses(WiFiClient client) {
   if (client) {
     for (int i = 0; i < connectedPumps; i++) {
       client.print(i);
       client.print('-');
-      client.print(pumps[i][1]);
-      if (i < (connectedPumps - 1))
+      client.print(pumps[i][pumpStatusColumn]);
+      client.print('-');
+      client.print(pumps[i][moistureValueColumn]);
+      client.print('-');
+      client.print(pumps[i][moistureMinValueRegisteredColumn]);
+      client.print('-');
+      client.print(pumps[i][moistureMaxValueRegisteredColumn]);
+      client.print('-');
+      client.print(pumps[i][moistureWetColumn]);
+      client.print('-');
+      client.print(pumps[i][moistureDryColumn]);
+      client.print('-');
+      client.print(pumps[i][moistureCurReadColumn]);
+      if (i < (connectedPumps - 1)) {
         client.print('_');
+      }
     }
   }
+#if DEBUG == 1
+  for (int i = 0; i < connectedPumps; i++) {
+    Serial.print(i);
+    Serial.print('-');
+    Serial.print(pumps[i][pumpStatusColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureValueColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureMinValueRegisteredColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureMaxValueRegisteredColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureWetColumn]);
+    Serial.print('-');
+    Serial.print(pumps[i][moistureDryColumn]);
+    Serial.print('-');
+    Serial.println(pumps[i][moistureCurReadColumn]);
+  }
+#endif
 }
 
 /*########################################################

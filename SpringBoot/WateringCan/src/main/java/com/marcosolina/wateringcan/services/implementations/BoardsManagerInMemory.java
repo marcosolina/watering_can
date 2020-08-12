@@ -5,11 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.marcosolina.wateringcan.devices.FlowerPot;
+import com.marcosolina.wateringcan.errors.WateringException;
+import com.marcosolina.wateringcan.services.interfaces.ActionService;
 import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
+import com.marcosolina.wateringcan.services.interfaces.WateringConfigService;
 
 /**
  * This implementation manages everything in the memory
@@ -19,6 +25,11 @@ import com.marcosolina.wateringcan.services.interfaces.BoardsManager;
  */
 public class BoardsManagerInMemory implements BoardsManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BoardsManagerInMemory.class);
+	
+	@Autowired
+	private WateringConfigService wateringConfig;
+	@Autowired
+	private ActionService actionService;
 	
 	/*
 	 * Key -> MAC address
@@ -57,6 +68,24 @@ public class BoardsManagerInMemory implements BoardsManager {
 		boards.entrySet().stream().forEach(e->pumps.add(e.getKey()));
 		
 		return pumps;
+	}
+
+	@Override
+	public void setLoadedConfig(String mac) {
+		LOGGER.debug(String.format("Updaing the board: %s with the stored json config", mac));
+		try {
+			Set<FlowerPot> pots = wateringConfig.loadPotsConfig();
+			pots.stream().filter(p -> p.getMac().equals(mac)).forEach(p -> {
+				try {
+					actionService.updateWetDryPotValues(p);
+				} catch (WateringException e) {
+					LOGGER.error(e.getMessage());
+				}
+			});
+		} catch (WateringException e) {
+			LOGGER.error(e.getMessage());
+		}
+		
 	}
 
 }

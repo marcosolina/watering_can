@@ -41,5 +41,7 @@ public interface BoardsManager {
 	 * @return
 	 */
 	public List<String> getMacList();
+	
+	public void setLoadedConfig(String mac);
 
 }

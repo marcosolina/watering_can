@@ -32,6 +32,7 @@ class InputText extends Component{
                 id={this.props.id}
                 label={this.props.label} 
                 name={this.props.name}
+                disabled={this.props.disabled ? true : false}
                 value={this.state.value}
                 fullWidth
                 onChange={this.handleChange.bind(this)}
@@ -45,7 +46,8 @@ InputText.propTypes = {
     id: PropTypes.string.isRequired,
     value: PropTypes.string,
     label: PropTypes.string,
-	onChange: PropTypes.func
+    onChange: PropTypes.func,
+    disabled: PropTypes.bool
 }
 
 export default InputText;
