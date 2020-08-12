@@ -5,6 +5,13 @@ import java.util.Set;
 
 import com.marcosolina.wateringcan.devices.FlowerPot;
 
+/**
+ * Flower pot configuration save. These are the config info that I want to
+ * persist
+ * 
+ * @author Marco
+ *
+ */
 public class RequestSaveConfig implements Serializable {
 
 	private static final long serialVersionUID = 1L;

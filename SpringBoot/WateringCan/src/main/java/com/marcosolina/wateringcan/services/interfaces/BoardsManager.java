@@ -41,7 +41,13 @@ public interface BoardsManager {
 	 * @return
 	 */
 	public List<String> getMacList();
-	
+
+	/**
+	 * Arduino does not store anything. I have to send to him a previous persisted
+	 * config (if available)
+	 * 
+	 * @param mac
+	 */
 	public void setLoadedConfig(String mac);
 
 }

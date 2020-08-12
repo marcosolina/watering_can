@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 
+/**
+ * Slider used to specifiy how many ml to pour into the pot
+ */
 class MlSlider extends Component{
 	constructor(props){
         super(props);

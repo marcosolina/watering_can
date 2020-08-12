@@ -29,6 +29,14 @@ public interface ActionService {
 	 * @throws WateringException
 	 */
 	public boolean setPotStatus(FlowerPot pot) throws WateringException;
-	
+
+	/**
+	 * Informing Arduino of the values that the user has selected for the "Dry" and
+	 * "Wet" statuses
+	 * 
+	 * @param pot
+	 * @return
+	 * @throws WateringException
+	 */
 	public boolean updateWetDryPotValues(FlowerPot pot) throws WateringException;
 }

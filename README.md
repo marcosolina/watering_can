@@ -25,29 +25,32 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
 
 ## Video Example
 
-![Diagram](./Misc/videos/video.gif)
+![Diagram](./Misc/videos/Watering-Can.gif)
 
 ## Diagrams
 
+### Devices
 ![Diagram](./Misc/pictures/diagram.png)
+### Arduino Connections
 ![Diagram](./Misc/pictures/FritzingSketch.png)
 
 ## TODO
 
 * Writing the Arudino firmware
     * Start / Stop the pump **(Done)**
-    * Read the moisture **(Not implemented yet)**
+    * Read the moisture **(Done)**
     * Connect to the Wifi **(Done)**
     * Arduino registration with the SpringBoot app **(Done)**
-    * Data exchange with the WebApp **(Partial implementation)**
+    * Data exchange with the WebApp **(Done)**
     * Remote control of the pump **(Done)**
 * Writing the Spring Boot app
     * Arduino discovery service **(Done)**
-    * Read the data from Arduino **(Partial implementation)**
+    * Read the data from Arduino **(Done)**
     * Send commands to Arduino **(Done)**
     * Create a UI to display the data from Arduino **(Done)**
     * Create UI to send comands to Arduino **(Done)**
 * Store some config in a File or DB **(Done - Json file)**
 * Authentication **(Mmmmm I'll see. VPN is more than enought at the moment)**
-* Option to pump XX number of ml of water **(Not implemented yet)**
+* Option to pump XX number of ml of water **(Done)**
+* Calibrate the pump **(Not implemented yet)**
 * Anything else that might come up in my mind (or my wife) :)
