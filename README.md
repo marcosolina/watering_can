@@ -23,6 +23,9 @@ The water pump that I choose operates with 3V-5V and 100-200mA, the Arduino boar
 
 The Raspberry Pi is not required, I already have one so I decided to deploy on it the Java Spring Boot app. You can use **any** computer with a **running JVM**
 
+## Example
+![Example](./Misc/pictures/IMG_7162.JPG)
+
 ## Video Example
 
 ![Diagram](./Misc/videos/Watering-Can.gif)
