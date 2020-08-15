@@ -38,9 +38,9 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
 ![Diagram](./Misc/videos/Watering-Can.gif)
 
 ## Screens
-![Example](./Misc/pictures/screen_1.png)
-![Example](./Misc/pictures/screen_2.png)
-![Example](./Misc/pictures/screen_3.png)
+![Example](./Misc/pictures/Screen_1.png)
+![Example](./Misc/pictures/Screen_2.png)
+![Example](./Misc/pictures/Screen_3.png)
 
 ## Diagrams
 
