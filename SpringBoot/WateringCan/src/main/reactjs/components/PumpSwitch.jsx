@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 /**
  * Switch used to turn on and off the pump
@@ -31,12 +32,19 @@ class PumpSwitch extends Component{
 
     render(){
         return(
-            <Switch
-                checked={this.state.status == "ON"}
-                onChange={this.handleChange.bind(this)}
-                name="checkedA"
-                color="primary"
-                inputProps={{ 'aria-label': 'secondary checkbox' }}
+            <FormControlLabel
+                value="onoff"
+                control={
+                    <Switch
+                        checked={this.state.status == "ON"}
+                        onChange={this.handleChange.bind(this)}
+                        name="checkedA"
+                        color="primary"
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                    />
+                }
+                label="Pour Water"
+                labelPlacement="start"
             />
         );
     }

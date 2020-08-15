@@ -13,9 +13,11 @@ import MlSlider from './components/MlSlider.jsx';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import SettingsIcon from '@material-ui/icons/Settings';
+import OpacityIcon from '@material-ui/icons/Opacity';
 import HumidityConfigDialog from './components/HumidityConfigDialog.jsx';
+import Tooltip from '@material-ui/core/Tooltip';
+import LocalGasStationIcon from '@material-ui/icons/LocalGasStation';
+import HumidtyInfo from './components/HumidityInfo.jsx';
 
 class App extends Component{
 	constructor(props) {
@@ -205,53 +207,73 @@ class App extends Component{
 								return  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
 											<Card>
 												<CardContent>
-													<InputText 
-														name={"" + pot.mac + "_" + pot.id}
-														id={"" + pot.mac + "_" + pot.id}
-														value={pot.description}
-														label={"Plant"}
-														onChange={this.onChangeInput.bind(this)}
-													/>
-													<br/><br/>
-													<Typography variant="body1" gutterBottom>
-														{
-															"Current soil humidity: " + pot.humidity + "%"
-														}
-													</Typography>
-													<IconButton 
-														color="primary" 
-														aria-label="upload picture" 
-														component="span"
-														onClick={this.openDialog.bind(this, "" + pot.mac + "_" + pot.id)}
-													>
-														<SettingsIcon />
-													</IconButton>
-													<br/><br/>
-													<MlSlider 
-														mac={pot.mac}
-														id={pot.id}
-														value={pot.ml}
-														onChange={this.onChangeSlider.bind(this)}
-													/>
+													<Grid container>
+														<Grid item xs={12} container justify="flex-end">
+															<HumidtyInfo value={pot.humidity} />
+														</Grid>
+														<Grid item xs={12}>
+															<InputText 
+																name={"" + pot.mac + "_" + pot.id}
+																id={"" + pot.mac + "_" + pot.id}
+																value={pot.description}
+																label={"Plant"}
+																onChange={this.onChangeInput.bind(this)}
+																/>
+														</Grid>
+														<Grid item xs={12}>
+															<br/>
+															<MlSlider 
+																mac={pot.mac}
+																id={pot.id}
+																value={pot.ml}
+																onChange={this.onChangeSlider.bind(this)}
+															/>		
+														</Grid>
+													</Grid>
 												</CardContent>
 												<CardActions>
-													<PumpSwitch
-														mac={pot.mac}
-														id={pot.id}
-														status={pot.status}
-														onChange={this.onChangePump.bind(this)}
-													/>
+													<Grid container justify="space-between" alignItems="center">
+														<Grid item justify="flex-start">
+															<Tooltip title="Calibrate the Moisture Sensor" placement="top">
+																<IconButton 
+																	color="primary" 
+																	component="span"
+																	onClick={this.openDialog.bind(this, "" + pot.mac + "_" + pot.id)}
+																>
+																	<OpacityIcon />
+																</IconButton>
+															</Tooltip>
+															<Tooltip title="Calibrate the Water pump" placement="top">
+																<IconButton 
+																	color="primary" 
+																	component="span"
+																	onClick={this.openDialog.bind(this, "" + pot.mac + "_" + pot.id)}
+																>
+																	<LocalGasStationIcon />
+																</IconButton>
+															</Tooltip>
+														</Grid>
+														<Grid item justify="flex-end">
+															<PumpSwitch
+																mac={pot.mac}
+																id={pot.id}
+																status={pot.status}
+																onChange={this.onChangePump.bind(this)}
+															/>
+														</Grid>
+													</Grid>
 												</CardActions>
 											</Card>
 										</Grid>
 							})
 						}
-						<Grid item xs={12}>
-							<Fab color="primary" aria-label="save" onClick={this.saveConfig.bind(this)}>
-								<SaveIcon />
-							</Fab>
-						</Grid>
 					</Grid>
+					<br/><br/><br/><br/>
+					<Tooltip title="Save the Configuration" placement="top">
+						<Fab color="primary" className="btn-save-config" aria-label="save" onClick={this.saveConfig.bind(this)}>
+							<SaveIcon />
+						</Fab>
+					</Tooltip>
 					<Snackbar
 						anchorOrigin={
 							{
