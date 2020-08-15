@@ -3,8 +3,16 @@
 My wife wanted something to control the humidity of the soil and to "pour" some water for her plants when required. So I decided to play a little with my Arduino and my Raspberry Pi.
 I want her to be able to retrieve the humidity and depending on the read decide what to do, so I will use my existing Arduino to read the data and activate the water pump, and my Rasp Pi to host a Java Spring Bott web app to provide her a screen to read the info and activate the pump. Because it is a web app... She can do this from everywhere :) 
 
+## Current Functionalities
 
-## Requirements
+* Moisture Sensor/s Calibration
+* Water Pump/s Calibration
+* Realtime moisture sensor/s read
+* Turning on/off the water pump/s
+* Saving the configuration
+
+
+# Requirements
 
 * [Arduino Uno WiFi](https://store.arduino.cc/arduino-uno-wiFi-rev2) or [Arduino MKR Wifi](https://store.arduino.cc/arduino-mkr-wifi-1010)
 * [Water Pump](https://www.amazon.it/gp/product/B082PM8L6X/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)
@@ -27,8 +35,12 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
 ![Example](./Misc/pictures/IMG_7162.JPG)
 
 ## Video Example
-
 ![Diagram](./Misc/videos/Watering-Can.gif)
+
+## Screens
+![Example](./Misc/pictures/screen_1.png)
+![Example](./Misc/pictures/screen_2.png)
+![Example](./Misc/pictures/screen_3.png)
 
 ## Diagrams
 
@@ -39,21 +51,5 @@ The Raspberry Pi is not required, I already have one so I decided to deploy on i
 
 ## TODO
 
-* Writing the Arudino firmware
-    * Start / Stop the pump **(Done)**
-    * Read the moisture **(Done)**
-    * Connect to the Wifi **(Done)**
-    * Arduino registration with the SpringBoot app **(Done)**
-    * Data exchange with the WebApp **(Done)**
-    * Remote control of the pump **(Done)**
-* Writing the Spring Boot app
-    * Arduino discovery service **(Done)**
-    * Read the data from Arduino **(Done)**
-    * Send commands to Arduino **(Done)**
-    * Create a UI to display the data from Arduino **(Done)**
-    * Create UI to send comands to Arduino **(Done)**
-* Store some config in a File or DB **(Done - Json file)**
 * Authentication **(Mmmmm I'll see. VPN is more than enought at the moment)**
-* Option to pump XX number of ml of water **(Done)**
-* Calibrate the pump **(Not implemented yet)**
 * Anything else that might come up in my mind (or my wife) :)

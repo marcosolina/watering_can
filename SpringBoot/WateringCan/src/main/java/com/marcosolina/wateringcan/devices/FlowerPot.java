@@ -24,6 +24,7 @@ public class FlowerPot implements Serializable {
 	private int dryValue;
 	private String description;
 	private PumpStatuses status;
+	private int mlPerSecond;
 
 	public FlowerPot() {
 	}
@@ -124,6 +125,14 @@ public class FlowerPot implements Serializable {
 
 	public void setStatus(PumpStatuses status) {
 		this.status = status;
+	}
+
+	public int getMlPerSecond() {
+		return mlPerSecond;
+	}
+
+	public void setMlPerSecond(int mlPerSecond) {
+		this.mlPerSecond = mlPerSecond;
 	}
 
 	@Override

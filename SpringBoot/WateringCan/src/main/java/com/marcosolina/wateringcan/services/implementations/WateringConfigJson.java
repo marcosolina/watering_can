@@ -116,4 +116,13 @@ public class WateringConfigJson implements WateringConfigService {
 		}
 	}
 
+	@Override
+	public void loadMlPerSecondStoredInTheConfig(FlowerPot pot) {
+		FlowerPot p = cache.get(pot.getMac() + "_" + pot.getId());
+		if (p != null) {
+			pot.setMlPerSecond(p.getMlPerSecond());
+		}
+		
+	}
+
 }

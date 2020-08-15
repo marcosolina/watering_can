@@ -3,6 +3,8 @@ package com.marcosolina.wateringcan.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.marcosolina.wateringcan.devices.FlowerPot;
+
 public class WUtils {
 
 	private static String contextPath;
@@ -49,14 +51,15 @@ public class WUtils {
 	}
 
 	/**
-	 * Currently I am using the same type of pumps. Here I calculate the number of
-	 * milliseconds that the pump should run to pour xx milliliters
+	 * The user should calibrate the pumps. If he does not I will default to the
+	 * value that I have calculated with my pump
 	 * 
 	 * @param ml
 	 * @return
 	 */
-	public static long getMilliSecondToPourMl(int ml) {
-		double seconds = (double) ml / WUtils.mlPerSecond;
+	public static long getMilliSecondToPourMl(FlowerPot pot) {
+		int mlPerSecond = pot.getMlPerSecond() > 0 ? pot.getMlPerSecond() : WUtils.mlPerSecond;
+		double seconds = (double) pot.getMl() / mlPerSecond;
 		long milliseconds = (long) (seconds * 1000);
 		return milliseconds;
 	}

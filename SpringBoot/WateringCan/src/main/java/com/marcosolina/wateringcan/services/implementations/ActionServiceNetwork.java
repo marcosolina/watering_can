@@ -26,31 +26,30 @@ public class ActionServiceNetwork implements ActionService {
 
 	@Autowired
 	private BoardsManager boardsManager;
-	
+
 	@Autowired
 	private WateringConfigService configService;
-	
+
 	@Override
 	public Set<FlowerPot> getListOfPots() throws WateringException {
 		LOGGER.debug("Retrieving list of available pumps");
 		Set<FlowerPot> potsSet = new HashSet<>();
-		
+
 		List<String> macs = boardsManager.getMacList();
 		for (String mac : macs) {
 			String ip = boardsManager.getIpForMac(mac);
 			String reply = sendCommand(ip, WUtils.arduinoCommandsPort(), "0");
 			potsSet.addAll(convertArduinoPotsStatusesReply(reply, mac));
 		}
-		
-		
+
 		return potsSet;
 	}
-	
-	private Set<FlowerPot> convertArduinoPotsStatusesReply(String arduinoReply, String mac){
+
+	private Set<FlowerPot> convertArduinoPotsStatusesReply(String arduinoReply, String mac) {
 		Set<FlowerPot> potSet = new HashSet<>();
-		String [] pots = arduinoReply.split("_");
+		String[] pots = arduinoReply.split("_");
 		for (String pot : pots) {
-			String [] potInfo = pot.split("-");
+			String[] potInfo = pot.split("-");
 			String potId = potInfo[0];
 			String pumpStatus = potInfo[1];
 			String moistVal = potInfo[2];
@@ -59,7 +58,7 @@ public class ActionServiceNetwork implements ActionService {
 			String moistWet = potInfo[5];
 			String moistDry = potInfo[6];
 			String moistCurrRead = potInfo[7];
-			
+
 			FlowerPot p = new FlowerPot(mac, potId, PumpStatuses.fromInt(Integer.parseInt(pumpStatus)));
 			p.setDryValue(Integer.parseInt(moistDry));
 			p.setHumidity(Integer.parseInt(moistVal));
@@ -67,12 +66,16 @@ public class ActionServiceNetwork implements ActionService {
 			p.setMinHumidityRead(Integer.parseInt(moistMin));
 			p.setWetValue(Integer.parseInt(moistWet));
 			p.setMoistureCurRead(Integer.parseInt(moistCurrRead));
-			
+
+			/*
+			 * Set some values reading them from the configuration
+			 */
 			p.setDescription(configService.getPotDescription(mac, potId));
-			
+			configService.loadMlPerSecondStoredInTheConfig(p);
+
 			potSet.add(p);
 		}
-		
+
 		return potSet;
 	}
 
@@ -105,38 +108,48 @@ public class ActionServiceNetwork implements ActionService {
 
 	@Override
 	public boolean setPotStatus(FlowerPot pot) throws WateringException {
-		
+
 		/*
-		 * If I am turning on the Pump I have to start a new thread
-		 * to turn it of later
+		 * If I am turning on the Pump I have to start a new thread to turn it of later
 		 */
-		if(pot.getStatus() == PumpStatuses.ON) {
-			if(pot.getMl() > 0) {
-				String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pot.getId(), pot.getStatus().getStatus()));
+		if (pot.getStatus() == PumpStatuses.ON) {
+			if (pot.getMl() > 0) {
+				String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(),
+						String.format("E%s-%s", pot.getId(), pot.getStatus().getStatus()));
 				Runnable stopPumpRunnable = () -> {
 					try {
-						Thread.sleep(WUtils.getMilliSecondToPourMl(pot.getMl()));
-						sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pot.getId(), PumpStatuses.OFF.getStatus()));
+						Thread.sleep(WUtils.getMilliSecondToPourMl(pot));
+						sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(),
+								String.format("E%s-%s", pot.getId(), PumpStatuses.OFF.getStatus()));
 					} catch (WateringException | InterruptedException e) {
 						e.printStackTrace();
 					}
 				};
-				
+
 				new Thread(stopPumpRunnable).start();
-				
+
 				return "OK".contentEquals(reply);
+			} else {
+				if (pot.getMl() == -1) {// pump calibration
+					LOGGER.info("Pump calibration");
+					String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(),
+							String.format("E%s-%s", pot.getId(), pot.getStatus().getStatus()));
+					return "OK".contentEquals(reply);
+				}
 			}
 			return true;
 		}
-		
-		String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(), String.format("E%s-%s", pot.getId(), pot.getStatus().getStatus()));
+
+		String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(),
+				String.format("E%s-%s", pot.getId(), pot.getStatus().getStatus()));
 		return "OK".contentEquals(reply);
 	}
 
 	@Override
 	public boolean updateWetDryPotValues(FlowerPot pot) throws WateringException {
-		String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(), String.format("U%s-%d-%d", pot.getId(), pot.getDryValue(), pot.getWetValue()));
+		String reply = sendCommand(boardsManager.getIpForMac(pot.getMac()), WUtils.arduinoCommandsPort(),
+				String.format("U%s-%d-%d", pot.getId(), pot.getDryValue(), pot.getWetValue()));
 		return "OK".contentEquals(reply);
 	}
-	
+
 }
