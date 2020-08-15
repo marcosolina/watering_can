@@ -40,4 +40,12 @@ public interface WateringConfigService {
 	 * @param pot
 	 */
 	public void setWetAndDryValues(FlowerPot pot);
+
+	/**
+	 * It retrieves the value from the configuration (if available) and it sets it
+	 * into the provided object
+	 * 
+	 * @param pot
+	 */
+	public void loadMlPerSecondStoredInTheConfig(FlowerPot pot);
 }

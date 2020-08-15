@@ -13,9 +13,12 @@ import MlSlider from './components/MlSlider.jsx';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import SettingsIcon from '@material-ui/icons/Settings';
+import OpacityIcon from '@material-ui/icons/Opacity';
 import HumidityConfigDialog from './components/HumidityConfigDialog.jsx';
+import Tooltip from '@material-ui/core/Tooltip';
+import LocalGasStationIcon from '@material-ui/icons/LocalGasStation';
+import HumidtyInfo from './components/HumidityInfo.jsx';
+import PumpCalibrationDialog from './components/PumpCalibrationDialog.jsx';
 
 class App extends Component{
 	constructor(props) {
@@ -26,7 +29,9 @@ class App extends Component{
 			snackMessage: "",
 			firstLoad: true,
 			dialogOpen: false,
-			potConfig: {}
+			pumpDialogOpen: false,
+			potConfig: {},
+			autoRefresh: true
 		};
 	}
 
@@ -63,7 +68,9 @@ class App extends Component{
 				}
 				this.setState({pots: p});
 			}
-			setTimeout(this.retrieveListOfPots.bind(this), 2000);
+			if(this.state.autoRefresh){
+				setTimeout(this.retrieveListOfPots.bind(this), 2000);
+			}
         }
 	}
 
@@ -190,6 +197,62 @@ class App extends Component{
 	}
 
 
+	openPumpDialog(potId){
+
+		this.setState({
+			pumpDialogOpen: true,
+			autoRefresh: false,
+			potConfig: this.state.pots[potId],
+			potConfigId: potId
+		});
+	}
+
+	onCancelPumpDialog(){
+		this.setState({
+			pumpDialogOpen: false,
+			autoRefresh: true
+		}, this.retrieveListOfPots.bind(this));
+	}
+
+	onSavePumpDialog(){
+		let pots = {...this.state.pots};
+		let potKey = this.state.potConfig.mac + "_" + this.state.potConfig.id;
+		pots[potKey] = this.state.potConfig;
+		this.setState({
+			pumpDialogOpen: false,
+			autoRefresh: true,
+			pots: pots
+		}, this.retrieveListOfPots.bind(this));
+	}
+
+	onChangePumpInDialog(mac, id, status){
+		let pot = {...this.state.potConfig};
+		let pot2 = {...this.state.potConfig};
+		pot.status = status;
+		pot.ml = -1;//I will let the user decide when to stop the pump
+		pot2.status = status;
+
+		let newState = {};
+
+		if(status == "ON"){
+			pot2.start = new Date();
+		}else{
+			let timeDiff = new Date() - pot2.start;
+			let seconds = Math.round(timeDiff / 1000);
+			let tmpMlPerSecong = 100;
+			if(seconds > 0){
+				tmpMlPerSecong = Math.round(100 / seconds);
+			}
+			pot2.mlPerSecond = tmpMlPerSecong;  
+			newState.snackOpen = true;
+			newState.snackMessage = "This pump pours " + pot2.mlPerSecond + "ml per second";
+		}
+		newState.potConfig = pot2;
+		doHttpRequest(__URLS.ACTIONS.SET_PUMP_STATUS, 'POST', pot, this.statusUpdateComplete.bind(this));
+		this.setState(newState);
+	}
+
+
 	render(){
 
 		let arrPots = [];
@@ -205,53 +268,73 @@ class App extends Component{
 								return  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
 											<Card>
 												<CardContent>
-													<InputText 
-														name={"" + pot.mac + "_" + pot.id}
-														id={"" + pot.mac + "_" + pot.id}
-														value={pot.description}
-														label={"Plant"}
-														onChange={this.onChangeInput.bind(this)}
-													/>
-													<br/><br/>
-													<Typography variant="body1" gutterBottom>
-														{
-															"Current soil humidity: " + pot.humidity + "%"
-														}
-													</Typography>
-													<IconButton 
-														color="primary" 
-														aria-label="upload picture" 
-														component="span"
-														onClick={this.openDialog.bind(this, "" + pot.mac + "_" + pot.id)}
-													>
-														<SettingsIcon />
-													</IconButton>
-													<br/><br/>
-													<MlSlider 
-														mac={pot.mac}
-														id={pot.id}
-														value={pot.ml}
-														onChange={this.onChangeSlider.bind(this)}
-													/>
+													<Grid container>
+														<Grid item xs={12} container justify="flex-end">
+															<HumidtyInfo value={pot.humidity} />
+														</Grid>
+														<Grid item xs={12}>
+															<InputText 
+																name={"" + pot.mac + "_" + pot.id}
+																id={"" + pot.mac + "_" + pot.id}
+																value={pot.description}
+																label={"Plant"}
+																onChange={this.onChangeInput.bind(this)}
+																/>
+														</Grid>
+														<Grid item xs={12}>
+															<br/>
+															<MlSlider 
+																mac={pot.mac}
+																id={pot.id}
+																value={pot.ml}
+																onChange={this.onChangeSlider.bind(this)}
+															/>		
+														</Grid>
+													</Grid>
 												</CardContent>
 												<CardActions>
-													<PumpSwitch
-														mac={pot.mac}
-														id={pot.id}
-														status={pot.status}
-														onChange={this.onChangePump.bind(this)}
-													/>
+													<Grid container justify="space-between" alignItems="center">
+														<Grid item justify="flex-start">
+															<Tooltip title="Calibrate the Moisture Sensor" placement="top">
+																<IconButton 
+																	color="primary" 
+																	component="span"
+																	onClick={this.openDialog.bind(this, "" + pot.mac + "_" + pot.id)}
+																>
+																	<OpacityIcon />
+																</IconButton>
+															</Tooltip>
+															<Tooltip title="Calibrate the Water pump" placement="top">
+																<IconButton 
+																	color="primary" 
+																	component="span"
+																	onClick={this.openPumpDialog.bind(this, "" + pot.mac + "_" + pot.id)}
+																>
+																	<LocalGasStationIcon />
+																</IconButton>
+															</Tooltip>
+														</Grid>
+														<Grid item justify="flex-end">
+															<PumpSwitch
+																mac={pot.mac}
+																id={pot.id}
+																status={pot.status}
+																onChange={this.onChangePump.bind(this)}
+															/>
+														</Grid>
+													</Grid>
 												</CardActions>
 											</Card>
 										</Grid>
 							})
 						}
-						<Grid item xs={12}>
-							<Fab color="primary" aria-label="save" onClick={this.saveConfig.bind(this)}>
-								<SaveIcon />
-							</Fab>
-						</Grid>
 					</Grid>
+					<br/><br/><br/><br/>
+					<Tooltip title="Save the Configuration" placement="top">
+						<Fab color="primary" className="btn-save-config" aria-label="save" onClick={this.saveConfig.bind(this)}>
+							<SaveIcon />
+						</Fab>
+					</Tooltip>
 					<Snackbar
 						anchorOrigin={
 							{
@@ -322,6 +405,18 @@ class App extends Component{
 							</Grid>
 						</Grid>
 					</HumidityConfigDialog>
+					<PumpCalibrationDialog
+						open={this.state.pumpDialogOpen}
+						onCancel={this.onCancelPumpDialog.bind(this)}
+						onSave={this.onSavePumpDialog.bind(this)}
+					>
+						<PumpSwitch
+							mac={this.state.potConfig.mac || ""}
+							id={this.state.potConfig.id || ""}
+							status={this.state.potConfig.status || "OFF"}
+							onChange={this.onChangePumpInDialog.bind(this)}
+						/>
+					</PumpCalibrationDialog>
 				</React.Fragment>
 		);
 	}

@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import InputText from './InputText.jsx';
 import Button from '@material-ui/core/Button';
 
 /**
@@ -31,7 +28,7 @@ class HumidityConfigDialog extends Component{
                         Cancel
                     </Button>
                     <Button onClick={this.props.onSave} color="primary">
-                        Save
+                        Ok
                     </Button>
                 </DialogActions>
             </Dialog>
