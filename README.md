@@ -1,7 +1,7 @@
 # Watering Can
 
 My wife wanted something to control the humidity of the soil and to "pour" some water for her plants when required. So I decided to play a little with my Arduino and my Raspberry Pi.
-I want her to be able to retrieve the humidity and depending on the read decide what to do, so I will use my existing Arduino to read the data and activate the water pump, and my Rasp Pi to host a Java Spring Bott web app to provide her a screen to read the info and activate the pump. Because it is a web app... She can do this from everywhere :) 
+I want her to be able to retrieve the humidity of the soil and depending on the read decide what to do, so I will use my existing Arduino to read the data and activate the water pump, and my Rasp Pi to host a Java Spring Bott web app to provide her a screen to read the info and activate the pump. Because it is a web app... She can do this from everywhere :) 
 
 ## Current Functionalities
 
