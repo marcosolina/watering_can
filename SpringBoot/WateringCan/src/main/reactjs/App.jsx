@@ -82,10 +82,11 @@ class App extends Component{
 	 * @param {*} status 
 	 */
 	onChangePump(mac, id, status){
-		let pots = this.state.pots;
+		let pots = JSON.parse(JSON.stringify(this.state.pots));
 		let potKey = mac + "_" + id;
 		pots[potKey].status = status;
 		pots[potKey].forceStatus = true;
+		//pots[potKey].ml = pots[potKey].ml * 10;
 		doHttpRequest(__URLS.ACTIONS.SET_PUMP_STATUS, 'POST', pots[potKey], this.statusUpdateComplete.bind(this));
 		this.setState({pots});
 	}
@@ -239,11 +240,12 @@ class App extends Component{
 		}else{
 			let timeDiff = new Date() - pot2.start;
 			let seconds = Math.round(timeDiff / 1000);
-			let tmpMlPerSecong = 100;
+			let tmpOneLiter = 1000;
+			pot2.mlPerSecond = tmpOneLiter;  
+			
 			if(seconds > 0){
-				tmpMlPerSecong = Math.round(100 / seconds);
+				pot2.mlPerSecond = Math.round(tmpOneLiter / seconds);
 			}
-			pot2.mlPerSecond = tmpMlPerSecong;  
 			newState.snackOpen = true;
 			newState.snackMessage = "This pump pours " + pot2.mlPerSecond + "ml per second";
 		}

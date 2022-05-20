@@ -23,7 +23,7 @@ class PumpCalibrationDialog extends Component{
                 <DialogTitle id="form-dialog-title">
                     <Typography variant="body2">
                         To calibrate your pump you need a measuring cup <img className="measuring-cup" src="/WateringCan/pictures/measuring_cup.png"/>
-                         and let the pump to pour the water into the cup. Start the pump and then stop it when it has poured 100ml of water.
+                         and let the pump to pour the water into the cup. Start the pump and then stop it when it has poured 1000ml (One liter) of water.
                         That's it. Don't forget to save the configuration from the main screen
                     </Typography>
                 </DialogTitle>

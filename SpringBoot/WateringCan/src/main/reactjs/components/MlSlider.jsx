@@ -35,8 +35,11 @@ class MlSlider extends Component{
     }
     
     render(){
+		const step = 100;
+		const min = 0;
+		const max = 1000;
         const marks = [];
-        for(let i = 0; i <= 100; i = i + 10 ){
+        for(let i = 0; i <= max; i = i + step ){
             marks.push({
                 value: i,
                 label: i + ""
@@ -53,7 +56,9 @@ class MlSlider extends Component{
                     getAriaValueText={this.valueText.bind(this)}
                     onChange={this.handleChange.bind(this)}
                     aria-labelledby={this.props.mac + "_" + this.props.id}
-                    step={1}
+                    step={step}
+					max={max}
+					min={min}
                     valueLabelDisplay="auto"
                     marks={marks}
                 />

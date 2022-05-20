@@ -19,6 +19,9 @@ byte mac[6];
 unsigned long timeOutDhcp = 60000;// 1 minute
 unsigned long timeOutDhcpOld = 0;
 
+unsigned long timeOutWifi = 60000 * 60;// 1 hour
+unsigned long timeOutWifiOld = 0;
+
 #define TCP_LISTENING_PORT 85
 WiFiServer tcpServer(TCP_LISTENING_PORT);
 WiFiClient tcpClient;
@@ -109,10 +112,34 @@ void setup() {
   applyOutputs();
 }
 
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
 void loop() {
   connectToWifi();
   discoverTheRasp();
   receiveACommand();
+  if (timeOutWifiOld != 0 && (millis() - timeOutWifiOld) > timeOutWifi) {
+    resetArduino();
+    /*
+      disconnectWifi();
+      timeOutWifiOld = millis();
+    */
+  }
+}
+
+/*
+   For some reason the UDP server cannot be reset.
+   As a workaround I will restart the whole board
+*/
+void resetArduino() {
+  for (int i = 0; i < connectedPumps; i++) {
+    if (pumps[i][pumpStatusColumn] == HIGH) {
+      // I'll do the reset only if nothing is running
+      return;
+    }
+  }
+
+  resetFunc();
 }
 
 
@@ -190,6 +217,8 @@ boolean connectToWifi() {
   udpServer.begin(UDP_LISTENING_PORT);
   tcpServer.begin();
   iHaveAnIpAddress = true;
+
+  timeOutWifiOld = millis();
   return true;
 }
 
@@ -198,8 +227,12 @@ void disconnectWifi() {
 #if DEBUG == 1
     Serial.println("Disconnecting WiFi");
 #endif
-    WiFi.disconnect();
 
+    WiFi.disconnect();
+    delay(300);
+    WiFi.end();
+    iHaveAnIpAddress = false;
+    iHaveRaspIp = false;
 #if DEBUG == 1
     Serial.println("WiFi disconnected");
 #endif
@@ -211,14 +244,16 @@ void discoverTheRasp() {
      If I don't have an IP it means that I am not connected,
      hence I am not able to find the Rasp
   */
-  if (!iHaveAnIpAddress)
+  if (!iHaveAnIpAddress) {
     return;
+  }
 
   /*
      No need to continue if I already have the Rasp IP
   */
-  if (iHaveRaspIp)
+  if (iHaveRaspIp) {
     return;
+  }
 
   int dataReceived = udpServer.parsePacket();
   if (dataReceived) {
@@ -274,6 +309,7 @@ void discoverTheRasp() {
       */
       if (tcpClient.connect(ipRasp, RASP_PORT)) {
         iHaveRaspIp = true;
+        udpServer.flush();
         udpServer.stop();
         tcpClient.print("GET /WateringCan/Arduino/registration?MAC=");
 
@@ -333,13 +369,7 @@ void receiveACommand() {
     String receivedMessage = "";
     switch (command) {
       case '0':
-#if DEBUG == 1
-        sendOutputStatuses(NULL);
-#endif
         readMoisture();
-#if DEBUG == 1
-        sendOutputStatuses(NULL);
-#endif
         sendOutputStatuses(client);
         break;
       case 'E':
